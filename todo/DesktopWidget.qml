@@ -19,17 +19,28 @@ DraggableDesktopWidget {
   readonly property color itemBg: showBackground ? Color.mSurface : Color.transparent
   readonly property color completedItemBg: showBackground ? Color.mSurfaceVariant : Color.transparent
 
-  implicitWidth: 300
+  // Scaled dimensions
+  readonly property int scaledMarginM: Math.round(Style.marginM * widgetScale)
+  readonly property int scaledMarginS: Math.round(Style.marginS * widgetScale)
+  readonly property int scaledMarginL: Math.round(Style.marginL * widgetScale)
+  readonly property int scaledBaseWidgetSize: Math.round(Style.baseWidgetSize * widgetScale)
+  readonly property int scaledFontSizeL: Math.round(Style.fontSizeL * widgetScale)
+  readonly property int scaledFontSizeM: Math.round(Style.fontSizeM * widgetScale)
+  readonly property int scaledFontSizeS: Math.round(Style.fontSizeS * widgetScale)
+  readonly property int scaledRadiusM: Math.round(Style.radiusM * widgetScale)
+  readonly property int scaledRadiusS: Math.round(Style.radiusS * widgetScale)
+
+  implicitWidth: Math.round(300 * widgetScale)
   implicitHeight: {
-    var headerHeight = Style.baseWidgetSize + Style.marginL * 2;
+    var headerHeight = scaledBaseWidgetSize + scaledMarginL * 2;
     if (!expanded)
       return headerHeight;
 
     var todosCount = root.filteredTodosModel.count;
-    var contentHeight = (todosCount === 0) ? Style.baseWidgetSize : (Style.baseWidgetSize * todosCount + Style.marginS * (todosCount - 1));
+    var contentHeight = (todosCount === 0) ? scaledBaseWidgetSize : (scaledBaseWidgetSize * todosCount + scaledMarginS * (todosCount - 1));
 
-    var totalHeight = contentHeight + Style.marginM * 2 + headerHeight;
-    return Math.min(totalHeight, headerHeight + 400); // Max 400px of content
+    var totalHeight = contentHeight + scaledMarginM * 2 + headerHeight;
+    return Math.min(totalHeight, headerHeight + Math.round(400 * widgetScale)); // Max 400px of content (scaled)
   }
 
   function getCurrentTodos() {
@@ -97,21 +108,21 @@ DraggableDesktopWidget {
 
   ColumnLayout {
     anchors.fill: parent
-    anchors.margins: Style.marginM
-    spacing: Style.marginS
+    anchors.margins: scaledMarginM
+    spacing: scaledMarginS
 
     RowLayout {
-      spacing: Style.marginS
+      spacing: scaledMarginS
       Layout.fillWidth: true
 
       NIcon {
         icon: "checklist"
-        pointSize: Style.fontSizeL
+        pointSize: scaledFontSizeL
       }
 
       NText {
         text: pluginApi?.tr("desktop_widget.header_title")
-        font.pointSize: Style.fontSizeL
+        font.pointSize: scaledFontSizeL
         font.weight: Font.Medium
       }
 
@@ -130,52 +141,52 @@ DraggableDesktopWidget {
           return text.replace("{active}", activeTodos).replace("{total}", todos.length);
         }
         color: Color.mOnSurfaceVariant
-        font.pointSize: Style.fontSizeS
+        font.pointSize: scaledFontSizeS
       }
 
       NIcon {
         icon: root.expanded ? "chevron-up" : "chevron-down"
-        pointSize: Style.fontSizeM
+        pointSize: scaledFontSizeM
         color: Color.mOnSurfaceVariant
       }
     }
 
     Item {
       Layout.fillWidth: true
-      Layout.preferredHeight: expanded ? (root.implicitHeight - (Style.baseWidgetSize + Style.marginL * 2)) : 0
+      Layout.preferredHeight: expanded ? (root.implicitHeight - (scaledBaseWidgetSize + scaledMarginL * 2)) : 0
       visible: expanded
 
       NBox {
         anchors.fill: parent
         color: root.todoBg
-        radius: Style.radiusM
+        radius: scaledRadiusM
 
         ListView {
           id: todoListView
           anchors.fill: parent
-          anchors.margins: Style.marginS
+          anchors.margins: scaledMarginS
           model: root.filteredTodosModel
-          spacing: Style.marginS
+          spacing: scaledMarginS
           boundsBehavior: Flickable.StopAtBounds
           flickableDirection: Flickable.VerticalFlick
 
-          height: Math.min(contentHeight, 400 - 2 * Style.marginS)
+          height: Math.min(contentHeight, Math.round(400 * widgetScale) - 2 * scaledMarginS)
 
           delegate: Rectangle {
             width: ListView.view.width
-            height: Style.baseWidgetSize
+            height: scaledBaseWidgetSize
             color: model.completed ? root.completedItemBg : root.itemBg
-            radius: Style.radiusS
+            radius: scaledRadiusS
 
             RowLayout {
               anchors.fill: parent
-              anchors.margins: Style.marginS
-              spacing: Style.marginS
+              anchors.margins: scaledMarginS
+              spacing: scaledMarginS
 
               NIcon {
                 icon: model.completed ? "square-check" : "square"
                 color: model.completed ? Color.mPrimary : Color.mOnSurfaceVariant
-                pointSize: Style.fontSizeS
+                pointSize: scaledFontSizeS
               }
 
               NText {
@@ -184,6 +195,7 @@ DraggableDesktopWidget {
                 font.strikeout: model.completed
                 elide: Text.ElideRight
                 Layout.fillWidth: true
+                font.pointSize: scaledFontSizeS
               }
             }
           }
@@ -191,14 +203,14 @@ DraggableDesktopWidget {
 
         Item {
           anchors.fill: parent
-          anchors.margins: Style.marginS
+          anchors.margins: scaledMarginS
           visible: root.filteredTodosModel.count === 0
 
           NText {
             anchors.centerIn: parent
             text: pluginApi?.tr("desktop_widget.empty_state")
             color: Color.mOnSurfaceVariant
-            font.pointSize: Style.fontSizeM
+            font.pointSize: scaledFontSizeM
             font.weight: Font.Normal
           }
         }
