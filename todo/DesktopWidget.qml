@@ -153,66 +153,87 @@ DraggableDesktopWidget {
 
     Item {
       Layout.fillWidth: true
-      Layout.preferredHeight: expanded ? (root.implicitHeight - (scaledBaseWidgetSize + scaledMarginL * 2)) : 0
+      Layout.fillHeight: true
       visible: expanded
 
       NBox {
         anchors.fill: parent
         color: root.todoBg
         radius: scaledRadiusM
+      }
 
-        ListView {
-          id: todoListView
-          anchors.fill: parent
-          anchors.margins: scaledMarginS
-          model: root.filteredTodosModel
+      Flickable {
+        id: todoFlickable
+        anchors.fill: parent
+        topMargin: scaledMarginL
+        bottomMargin: scaledMarginL
+        leftMargin: scaledMarginS
+        rightMargin: scaledMarginM
+        contentWidth: width - (scaledMarginL)
+        contentHeight: columnLayout.implicitHeight
+        flickableDirection: Flickable.VerticalFlick
+        clip: true
+
+        Column {
+          id: columnLayout
+          width: parent.width
           spacing: scaledMarginS
-          boundsBehavior: Flickable.StopAtBounds
-          flickableDirection: Flickable.VerticalFlick
 
-          height: Math.min(contentHeight, Math.round(400 * widgetScale) - 2 * scaledMarginS)
+          Repeater {
+            model: root.filteredTodosModel
 
-          delegate: Rectangle {
-            width: ListView.view.width
-            height: scaledBaseWidgetSize
-            color: model.completed ? root.completedItemBg : root.itemBg
-            radius: scaledRadiusS
+            delegate: Item {
+              width: parent.width
+              height: scaledBaseWidgetSize
 
-            RowLayout {
-              anchors.fill: parent
-              anchors.margins: scaledMarginS
-              spacing: scaledMarginS
+              Rectangle {
+                anchors.fill: parent
+                anchors.margins: 0
+                color: model.completed ? root.completedItemBg : root.itemBg
+                radius: scaledRadiusS
 
-              NIcon {
-                icon: model.completed ? "square-check" : "square"
-                color: model.completed ? Color.mPrimary : Color.mOnSurfaceVariant
-                pointSize: scaledFontSizeS
-              }
+                Item {
+                  anchors.fill: parent
+                  anchors.margins: scaledMarginM
 
-              NText {
-                text: model.text
-                color: model.completed ? Color.mOnSurfaceVariant : Color.mOnSurface
-                font.strikeout: model.completed
-                elide: Text.ElideRight
-                Layout.fillWidth: true
-                font.pointSize: scaledFontSizeS
+                  NIcon {
+                    id: iconItem
+                    icon: model.completed ? "square-check" : "square"
+                    color: model.completed ? Color.mPrimary : Color.mOnSurfaceVariant
+                    pointSize: scaledFontSizeS
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                  }
+
+                  NText {
+                    text: model.text
+                    color: model.completed ? Color.mOnSurfaceVariant : Color.mOnSurface
+                    font.strikeout: model.completed
+                    elide: Text.ElideRight
+                    anchors.left: iconItem.right
+                    anchors.leftMargin: scaledMarginS
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pointSize: scaledFontSizeS
+                  }
+                }
               }
             }
           }
         }
+      }
 
-        Item {
-          anchors.fill: parent
-          anchors.margins: scaledMarginS
-          visible: root.filteredTodosModel.count === 0
+      Item {
+        anchors.fill: parent
+        anchors.margins: scaledMarginS
+        visible: root.filteredTodosModel.count === 0
 
-          NText {
-            anchors.centerIn: parent
-            text: pluginApi?.tr("desktop_widget.empty_state")
-            color: Color.mOnSurfaceVariant
-            font.pointSize: scaledFontSizeM
-            font.weight: Font.Normal
-          }
+        NText {
+          anchors.centerIn: parent
+          text: pluginApi?.tr("desktop_widget.empty_state")
+          color: Color.mOnSurfaceVariant
+          font.pointSize: scaledFontSizeM
+          font.weight: Font.Normal
         }
       }
     }
