@@ -188,6 +188,21 @@
       "lastUpdated": "2026-01-04T21:11:31-05:00"
     },
     {
+      "id": "mpris-lyric",
+      "name": "MPRIS Lyric",
+      "version": "1.0.0",
+      "author": "DBeidachazi",
+      "description": "Display synchronized lyrics from MPRIS-compatible music players (e.g., go-musicfox) in the bar.",
+      "minNoctaliaVersion": "3.8.0",
+      "license": "MIT",
+      "tags": [
+        "Bar",
+        "Music",
+        "Lyrics"
+      ],
+      "lastUpdated": "2026-01-17T14:48:13+08:00"
+    },
+    {
       "id": "network-indicator",
       "name": "NetworkIndicator",
       "version": "1.0.3",
