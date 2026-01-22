@@ -50,9 +50,9 @@ Rectangle {
       opacity: mainInstance?.isRefreshing ? 0.5 : 1.0
     }
 
-    // Show details when not in compact mode
+    // Show details when not in compact mode and there's something to show
     ColumnLayout {
-      visible: !mainInstance?.compactMode && mainInstance?.tailscaleRunning
+      visible: !mainInstance?.compactMode && mainInstance?.tailscaleRunning && (mainInstance?.showIpAddress || mainInstance?.showPeerCount)
       spacing: 2
       Layout.leftMargin: Style.marginXS
       Layout.rightMargin: Style.marginS
