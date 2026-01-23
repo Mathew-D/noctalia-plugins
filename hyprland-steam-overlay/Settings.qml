@@ -13,6 +13,7 @@ ColumnLayout {
 
   // Local state - track changes before saving
   property bool valueAutoLaunchSteam: cfg.autoLaunchSteam ?? defaults.autoLaunchSteam ?? true
+  property bool valueEnableChatNotifications: cfg.enableChatNotifications ?? defaults.enableChatNotifications ?? true
   property int valueFriendsWidth: cfg.friendsWidthPercent ?? defaults.friendsWidthPercent ?? 10
   property int valueMainWidth: cfg.mainWidthPercent ?? defaults.mainWidthPercent ?? 60
   property int valueChatWidth: cfg.chatWidthPercent ?? defaults.chatWidthPercent ?? 25
@@ -38,6 +39,15 @@ ColumnLayout {
     description: "Automatically launch Steam when toggling overlay if it's not running"
     checked: root.valueAutoLaunchSteam
     onToggled: root.valueAutoLaunchSteam = checked
+  }
+
+  // Chat notifications toggle
+  NCheckbox {
+    Layout.fillWidth: true
+    label: "Chat Notifications"
+    description: "Show notification indicator on bar icon when new Steam chat messages arrive"
+    checked: root.valueEnableChatNotifications
+    onToggled: root.valueEnableChatNotifications = checked
   }
 
   NDivider {
@@ -203,6 +213,7 @@ ColumnLayout {
 
     // Update the plugin settings object
     pluginApi.pluginSettings.autoLaunchSteam = root.valueAutoLaunchSteam;
+    pluginApi.pluginSettings.enableChatNotifications = root.valueEnableChatNotifications;
     pluginApi.pluginSettings.friendsWidthPercent = root.valueFriendsWidth;
     pluginApi.pluginSettings.mainWidthPercent = root.valueMainWidth;
     pluginApi.pluginSettings.chatWidthPercent = root.valueChatWidth;

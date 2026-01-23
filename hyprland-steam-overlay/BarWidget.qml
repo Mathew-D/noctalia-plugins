@@ -13,14 +13,14 @@ Rectangle {
   property string widgetId: ""
   property string section: ""
 
-  implicitWidth: barIsVertical ? Style.capsuleHeight : contentRow.implicitWidth + Style.marginM * 2
-  implicitHeight: Style.capsuleHeight
+  readonly property string barPosition: Settings.getBarPositionForScreen(screen.name)
+  readonly property bool barIsVertical: barPosition === "left" || barPosition === "right"
+
+  implicitWidth: barIsVertical ? Style.getCapsuleHeightForScreen(screen.name) : contentRow.implicitWidth + Style.marginM * 2
+  implicitHeight: Style.getCapsuleHeightForScreen(screen.name)
 
   property bool hasNewMessages: pluginApi?.pluginSettings?.hasNewMessages || false
   property bool steamRunning: false
-
-  readonly property string barPosition: Settings.data.bar.position || "top"
-  readonly property bool barIsVertical: barPosition === "left" || barPosition === "right"
 
   color: Style.capsuleColor
   radius: Style.radiusL
@@ -48,6 +48,13 @@ Rectangle {
 
   Component.onCompleted: {
     checkSteamProcess.running = true;
+  }
+
+  // Process to toggle Steam overlay via IPC
+  Process {
+    id: toggleProcess
+    command: ["qs", "-p", Quickshell.shellDir, "ipc", "call", "plugin:hyprland-steam-overlay", "toggle"]
+    running: false
   }
 
   RowLayout {
@@ -160,15 +167,8 @@ Rectangle {
     onClicked: {
       if (pluginApi) {
         Logger.i("SteamOverlay.BarWidget: Calling Steam overlay toggle");
-
-        // Use direct IPC call
-        var ipc = Qt.createQmlObject('
-          import Quickshell.Io
-          Process {
-            command: ["qs", "ipc", "-c", "noctalia-shell", "call", "plugin:hyprland-steam-overlay", "toggle"]
-            running: true
-          }
-        ', root, "ipcProcess");
+        // Call toggle via IPC
+        toggleProcess.running = true;
       }
     }
   }

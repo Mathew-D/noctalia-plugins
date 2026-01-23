@@ -75,7 +75,7 @@ Item {
 
         // Close button
         NButton {
-          text: "Zamknij (ESC)"
+          text: "Close (ESC)"
           onClicked: {
             if (pluginApi) {
               pluginApi.closePanel();

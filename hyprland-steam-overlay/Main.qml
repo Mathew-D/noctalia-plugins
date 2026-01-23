@@ -38,30 +38,8 @@ Item {
   readonly property int totalWidth: friendsWidth + gapSize + mainWidth + gapSize + chatWidth
   readonly property int centerOffset: Math.round((screenWidth - totalWidth) / 2)
 
-  // Logger helper functions (fallback to console if Logger not available)
-  function logDebug(msg) {
-    if (typeof Logger !== 'undefined') Logger.d(msg);
-    else console.log(msg);
-  }
-
-  function logInfo(msg) {
-    if (typeof Logger !== 'undefined') Logger.i(msg);
-    else console.log(msg);
-  }
-
-  function logWarn(msg) {
-    if (typeof Logger !== 'undefined') Logger.w(msg);
-    else console.warn(msg);
-  }
-
-  function logError(msg) {
-    if (typeof Logger !== 'undefined') Logger.e(msg);
-    else console.error(msg);
-  }
-
   onPluginApiChanged: {
     if (pluginApi) {
-      logInfo("SteamOverlay: " + (pluginApi?.tr("main.plugin_loaded") || "Plugin loaded"));
       checkSteam.running = true;
     }
   }
@@ -463,8 +441,6 @@ Item {
         if (steamWindows.length > 0) {
           // Now detect and move ALL Steam windows
           detectAllWindows.running = true;
-        } else {
-          logWarn("SteamOverlay: " + (pluginApi?.tr("main.no_windows_found") || "No Steam windows found"));
         }
       });
     }
