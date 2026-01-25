@@ -4,6 +4,7 @@
   "version": "1.0.2",
   "minNoctaliaVersion": "3.7.1",
   "author": "fusuyfusuy",
+  "repository": "https://github.com/noctalia-dev/noctalia-plugins",
   "license": "MIT",
   "repository": "",
   "description": "A simple note taking plugin for Noctalia Shell.",
