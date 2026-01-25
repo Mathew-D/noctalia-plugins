@@ -282,7 +282,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: Style.baseWidgetSize
                 text: modKeyVariable
-                placeholderText: "$mod"
+                placeholderText: "$mainMod"
 
                 onTextChanged: {
                     if (text.length > 0 && pluginApi && pluginApi.pluginSettings) {
@@ -519,7 +519,7 @@ ColumnLayout {
               id: commandText
               anchors.fill: parent
               anchors.margins: Style.marginS
-              text: "qs -c \"noctalia-shell\" ipc call \"keybind-cheatsheet\" \"toggle\""
+              text: "qs -c \"noctalia-shell\" ipc call \"plugin:keybind-cheatsheet\" \"toggle\""
               font.family: "monospace"
               pointSize: Style.fontSizeS
               color: Color.mPrimary
@@ -529,7 +529,7 @@ ColumnLayout {
 
           NText {
             text: pluginApi?.tr("keybind-cheatsheet.settings.keybind-example-hyprland") ||
-              "Hyprland example: bind = $mod, F1, exec, qs -c \"noctalia-shell\" ipc call \"keybind-cheatsheet\" \"toggle\""
+              "Hyprland example: bind = $mod, F1, exec, qs -c \"noctalia-shell\" ipc call \"plugin:keybind-cheatsheet\" \"toggle\""
             color: Color.mOnSurfaceVariant
             pointSize: Style.fontSizeXS
             Layout.fillWidth: true
@@ -538,7 +538,7 @@ ColumnLayout {
 
           NText {
             text: pluginApi?.tr("keybind-cheatsheet.settings.keybind-example-niri") ||
-              "Niri example: Super+F1 { spawn \"qs\" \"-c\" \"noctalia-shell\" \"ipc\" \"call\" \"keybind-cheatsheet\" \"toggle\"; }"
+              "Niri example: Super+F1 { spawn \"qs\" \"-c\" \"noctalia-shell\" \"ipc\" \"call\" \"plugin:keybind-cheatsheet\" \"toggle\"; }"
             color: Color.mOnSurfaceVariant
             pointSize: Style.fontSizeXS
             Layout.fillWidth: true
