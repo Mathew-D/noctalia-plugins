@@ -226,7 +226,7 @@ Rectangle {
 
     onClicked: {
       if (pluginApi) {
-        pluginApi.openPanel(screen);
+        pluginApi.openPanel(root.screen, root);
       }
     }
 
