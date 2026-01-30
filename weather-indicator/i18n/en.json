@@ -11,6 +11,16 @@
     "showConditionIcon": {
       "desc": "Include the visual weather symbol in the widget.",
       "label": "Show condition icon"
+    },
+    "tooltipOption": {
+      "desc": "Choose what you would like the tooltip to display.",
+      "label": "Tooltip options"
+    },
+    "mode": {
+      "disable": "Disable the Tooltip",
+      "highlow": "High/Low temps",
+      "sunrise": "Sunrise/set times",
+      "everything": "Show all"
     }
   }
 }

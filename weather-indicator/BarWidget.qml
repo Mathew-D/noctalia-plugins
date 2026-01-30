@@ -4,6 +4,7 @@ import Quickshell
 import qs.Commons
 import qs.Services.Location
 import qs.Widgets
+import qs.Services.UI
 
 // Bar Widget Component
 Item {
@@ -21,6 +22,7 @@ Item {
   readonly property bool showTempValue: pluginApi?.pluginSettings?.showTempValue ?? true
   readonly property bool showConditionIcon: pluginApi?.pluginSettings?.showConditionIcon ?? true
   readonly property bool showTempUnit: pluginApi?.pluginSettings?.showTempUnit ?? true
+  readonly property int tooltipOption: pluginApi?.pluginSettings?.tooltipOption ?? 0
 
   // Bar positioning properties
   readonly property string screenName: screen ? screen.name : ""
@@ -96,4 +98,78 @@ Item {
       }
     }
   }
+
+MouseArea {
+    id: mouseArea
+    anchors.fill: parent
+    hoverEnabled: true
+    cursorShape: tooltipOption === 0 ? Qt.ArrowCursor : Qt.PointingHandCursor
+
+    onEntered: {
+        if (tooltipOption !== 0) {
+            buildTooltip();
+        }
+    }
+
+    onExited: {
+    TooltipService.hide();
+    }
+}
+
+function buildHiLowTemps() {
+    var max = LocationService.data.weather.daily.temperature_2m_max[0]
+    var min = LocationService.data.weather.daily.temperature_2m_min[0]
+    var suffix = "°C";
+
+    if (Settings.data.location.useFahrenheit) {
+        max = LocationService.celsiusToFahrenheit(max)
+        min = LocationService.celsiusToFahrenheit(min)
+        suffix = "°F";
+    }
+
+    max = Math.round(max)
+    min = Math.round(min)
+
+    var tooltip = `High of ${max}${suffix}\nLow of ${min}${suffix}`
+    return tooltip;
+}
+
+function buildSunriseSunset() {
+    var riseDate = new Date(LocationService.data.weather.daily.sunrise[0])
+    var setDate  = new Date(LocationService.data.weather.daily.sunset[0])
+
+    var options = { hour: '2-digit', minute: '2-digit' };
+    var rise = riseDate.toLocaleTimeString(undefined, options);
+    var set  = setDate.toLocaleTimeString(undefined, options);
+
+    var tooltip = `Sunrise: ${rise}\nSunset : ${set}`
+    return tooltip;
+}
+
+function buildTooltip() {
+    switch (tooltipOption) {
+        case 1: {
+            var tooltip = buildHiLowTemps()
+            TooltipService.show(root, tooltip, BarService.getTooltipDirection())
+            break
+        }
+
+        case 2:
+            var tooltip = buildSunriseSunset()
+
+            TooltipService.show(root, tooltip, BarService.getTooltipDirection())
+            break
+
+        case 3:
+            var tooltip1 = buildHiLowTemps()
+            var tooltip2 = buildSunriseSunset()
+            var finaltooltip = `${tooltip1}\n${tooltip2}`
+
+            TooltipService.show(root, finaltooltip, BarService.getTooltipDirection())
+            break
+
+        default:
+            break
+    }
+}
 }

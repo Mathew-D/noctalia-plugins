@@ -12,6 +12,7 @@ ColumnLayout {
   property bool showTempValue: pluginApi?.pluginSettings?.showTempValue ?? true
   property bool showConditionIcon: pluginApi?.pluginSettings?.showConditionIcon ?? true
   property bool showTempUnit: pluginApi?.pluginSettings?.showTempUnit ?? true
+  property int tooltipOption: pluginApi?.pluginSettings?.tooltipOption ?? 0
 
   spacing: Style.marginL
 
@@ -52,6 +53,20 @@ ColumnLayout {
     }
   }
 
+  NComboBox {
+    Layout.fillWidth: true
+    label: pluginApi?.tr("settings.tooltipOption.label") ?? "Tooltip options"
+    description: pluginApi?.tr("settings.tooltipOption.desc") ?? "Choose what you would like the tooltip to display."
+    model: [
+      {"key": "0", "name": pluginApi?.tr("settings.mode.disable") ?? "Disable the Tooltip"},
+      {"key": "1", "name": pluginApi?.tr("settings.mode.highlow") ?? "High/Low tempuratures"},
+      {"key": "2", "name": pluginApi?.tr("settings.mode.sunrise") ?? "Sunrise and Sunset times"},
+      {"key": "3", "name": pluginApi?.tr("settings.mode.everything") ?? "Show all weather information."}
+    ]
+    currentKey: String(root.tooltipOption)
+    onSelected: key => root.tooltipOption = parseInt(key)
+  }
+
   function saveSettings() {
     if (!pluginApi) {
       Logger.e("WeatherIndicator", "Cannot save settings: pluginApi is null");
@@ -61,6 +76,7 @@ ColumnLayout {
     pluginApi.pluginSettings.showTempValue = root.showTempValue;
     pluginApi.pluginSettings.showConditionIcon = root.showConditionIcon;
     pluginApi.pluginSettings.showTempUnit = root.showTempUnit;
+    pluginApi.pluginSettings.tooltipOption = root.tooltipOption;
 
     pluginApi.saveSettings();
 
