@@ -1,6 +1,9 @@
 # Battery Threshold
 
-A plugin for Noctalia Shell to control the battery threshold on laptops, helping extend battery lifespan. This plugin only works if your laptop supports charge threshold control (as exported by the kernel in sysfs). The plugin looks like this in action:
+A plugin for Noctalia Shell to control the battery threshold on laptops, helping
+extend battery lifespan. This plugin only works if your laptop supports charge
+threshold control (as exported by the kernel in sysfs). The plugin looks like
+this in action:
 
 ![Preview](preview.png)
 
@@ -10,14 +13,10 @@ A plugin for Noctalia Shell to control the battery threshold on laptops, helping
 - **Panel**: Adjust battery threshold with a slider (40-100%)
 - **Persistent Settings**: Saves and restores threshold across reboots
 
-## Limitations
-
-- Currently supports only the primary battery, which this plugin expects to
-  have exposed as BAT0 by sysfs.
-
 ## Usage
 
-Add the bar widget to your bar. Click to open the panel and adjust the battery threshold using the slider.
+Add the bar widget to your bar. Click to open the panel and adjust the battery
+threshold using the slider.
 
 ### Panel Controls
 
@@ -27,7 +26,9 @@ Add the bar widget to your bar. Click to open the panel and adjust the battery t
 
 ## Setup (Required)
 
-This plugin requires write access to the battery threshold sysfs file. The included `setup_rules.sh` script configures a udev rule that grants write permission to members of the `battery_ctl` group:
+This plugin requires write access to the battery threshold sysfs file. The
+included `setup_rules.sh` script configures a udev rule that grants write
+permission to members of the `battery_ctl` group:
 
 ```bash
 $ sudo ./setup_rules.sh
@@ -54,8 +55,10 @@ qs -c noctalia-shell ipc call plugin:battery-threshold set <value>
 
 ## Troubleshooting
 
-- **Read-only mode**: Ensure udev rule is installed and you're in the correct group
-- **Not available**: Your laptop may not support charge threshold control
+- **Read-only mode**: Ensure udev rule is installed and you're in the correct
+  group
+- **Not available**: Your laptop may not support charge threshold control, or
+  select the correct battery in the settings menu
 - **Changes not saving**: Check write permissions on the sysfs file
 
 ## Requirements
@@ -63,3 +66,4 @@ qs -c noctalia-shell ipc call plugin:battery-threshold set <value>
 - Laptop with battery charge threshold support (ThinkPad, ASUS, etc.)
 - Noctalia 3.6.0 or later
 - Tested on Asus Zenbook 14 UX3405
+- Tested on Asus TUF Gaming F15 FX506L
