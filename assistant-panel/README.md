@@ -11,7 +11,7 @@ https://github.com/user-attachments/assets/0d1fb5eb-0b16-4ff4-a6ed-f78c196f756f
 ## Features
 
 ### AI Chat
-- **Multiple AI Providers**: Support for Google Gemini, OpenAI, OpenRouter, and local Ollama models
+- **Multiple AI Providers**: Support for Google Gemini and any model compatible with OpenAI API endpoints.
 - **Conversation History**: Persistent chat history with configurable length
 - **System Prompts**: Customize AI behavior with system instructions
 - **Temperature Control**: Adjust response creativity

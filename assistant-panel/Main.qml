@@ -42,7 +42,7 @@ Item {
         "name": "OpenAI Compatible",
         "defaultModel": "gpt-4o-mini",
         // Endpoint is dynamic based on settings (openaiBaseUrl)
-        "endpoint": "" 
+        "endpoint": ""
       }
     })
 
@@ -72,13 +72,14 @@ Item {
   readonly property string envDeeplApiKey: Quickshell.env("NOCTALIA_AP_DEEPL_API_KEY") || ""
   readonly property real temperature: pluginApi?.pluginSettings?.ai?.temperature || 0.7
   readonly property string systemPrompt: pluginApi?.pluginSettings?.ai?.systemPrompt || ""
-  
+
   // OpenAI Compatible Settings
   readonly property bool openaiLocal: pluginApi?.pluginSettings?.ai?.openaiLocal ?? false
   readonly property string openaiBaseUrl: {
-      var url = pluginApi?.pluginSettings?.ai?.openaiBaseUrl || "";
-      if (url === "") return "https://api.openai.com/v1/chat/completions";
-      return url;
+    var url = pluginApi?.pluginSettings?.ai?.openaiBaseUrl || "";
+    if (url === "")
+      return "https://api.openai.com/v1/chat/completions";
+    return url;
   }
 
   Component.onCompleted: {
@@ -206,9 +207,9 @@ Item {
     // For OpenAI Compatible, check apiKey only if NOT local
     var requiresKey = true;
     if (provider === Constants.Providers.OPENAI_COMPATIBLE && openaiLocal) {
-        requiresKey = false;
+      requiresKey = false;
     }
-    
+
     if (requiresKey && (!apiKey || apiKey.trim() === "")) {
       root.errorMessage = pluginApi?.tr("errors.noApiKey") || "Please configure your API key in settings";
       Logger.e("AssistantPanel", "sendMessage: missing API key");
@@ -515,7 +516,7 @@ Item {
       if (exitCode !== 0 && root.currentResponse === "") {
         if (root.errorMessage === "") {
           if (provider === Constants.Providers.OPENAI_COMPATIBLE && openaiLocal) {
-             root.errorMessage = pluginApi?.tr("errors.localNotRunning") || "Local inference server is not reachable. Please check your configuration and ensure it is running.";
+            root.errorMessage = pluginApi?.tr("errors.localNotRunning") || "Local inference server is not reachable. Please check your configuration and ensure it is running.";
           } else {
             root.errorMessage = pluginApi?.tr("errors.requestFailed") || "Request failed";
           }
@@ -536,14 +537,14 @@ Item {
     var payload = ProviderLogic.buildOpenAIPayload(model, systemPrompt, history, temperature);
 
     var endpoint = openaiBaseUrl;
-    
+
     Logger.i("AssistantPanel", "sendOpenAIRequest: endpoint=" + endpoint);
     Logger.i("AssistantPanel", "sendOpenAIRequest: payload=" + JSON.stringify(payload));
     openaiProcess.buffer = "";
 
     var cmd = ["curl", "-s", "-S", "--no-buffer", "-X", "POST", "-H", "Content-Type: application/json"];
 
-    // Add Authorization header if API key exists (even if local, some might want it, but usually not needed if local checked. 
+    // Add Authorization header if API key exists (even if local, some might want it, but usually not needed if local checked.
     // Logic above sets requiresKey=false for local, but here we just check if it exists to be safe/flexible).
     // Actually, if local is checked, we might NOT want to send it if it's empty, or if user put something there.
     // Let's rely on apiKey property which handles env vs settings.

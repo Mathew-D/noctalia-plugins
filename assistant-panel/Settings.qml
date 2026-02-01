@@ -282,13 +282,12 @@ ColumnLayout {
       placeholderText: "https://api.openai.com/v1/chat/completions"
       onTextChanged: root.editOpenAiBaseUrl = text
     }
-    
+
     // Note about Base URL and response API
     NText {
       Layout.fillWidth: true
       visible: true
-      text: (pluginApi?.tr("settings.baseUrlNote") || "Note: This plugin does not currently support the new OpenAI responses API. Go to ") +
-            "https://platform.openai.com/docs/api-reference/chat/create" + (pluginApi?.tr("settings.moreInfo") || " for more Info.")
+      text: (pluginApi?.tr("settings.baseUrlNote") || "Note: This plugin does not currently support the new OpenAI responses API. Go to ") + "https://platform.openai.com/docs/api-reference/chat/create" + (pluginApi?.tr("settings.moreInfo") || " for more Info.")
       color: Color.mOnSurfaceVariant
       pointSize: Style.fontSizeXS
       wrapMode: Text.Wrap
@@ -324,8 +323,9 @@ ColumnLayout {
   NTextInput {
     Layout.fillWidth: true
     visible: {
-        if (root.editProvider === Constants.Providers.OPENAI_COMPATIBLE && root.editOpenAiLocal) return false;
-        return providers[root.editProvider]?.requiresKey ?? true;
+      if (root.editProvider === Constants.Providers.OPENAI_COMPATIBLE && root.editOpenAiLocal)
+        return false;
+      return providers[root.editProvider]?.requiresKey ?? true;
     }
     label: pluginApi?.tr("settings.apiKey") || "API Key"
     description: {
@@ -536,7 +536,7 @@ ColumnLayout {
     pluginApi.pluginSettings.ai.apiKeys = root.editApiKeys;
     pluginApi.pluginSettings.ai.temperature = root.editTemperature;
     pluginApi.pluginSettings.ai.systemPrompt = root.editSystemPrompt;
-    
+
     // Save OpenAI Compatible specific settings
     pluginApi.pluginSettings.ai.openaiLocal = root.editOpenAiLocal;
     pluginApi.pluginSettings.ai.openaiBaseUrl = root.editOpenAiBaseUrl;
