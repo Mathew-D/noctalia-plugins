@@ -4,7 +4,7 @@
     {
       "id": "assistant-panel",
       "name": "Assistant Panel",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "official": false,
       "author": "j-1in",
       "description": "AI Chat and Translation panel",
@@ -18,7 +18,7 @@
         "Productivity",
         "Network"
       ],
-      "lastUpdated": "2026-02-01T22:04:53+01:00"
+      "lastUpdated": "2026-02-01T22:16:45+01:00"
     },
     {
       "id": "battery-threshold",
