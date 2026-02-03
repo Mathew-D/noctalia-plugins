@@ -57,7 +57,7 @@ Item {
 
       NIcon {
         anchors.verticalCenter: parent.verticalCenter
-        icon: "checklist"
+        icon: "clipboard-check"
         applyUiScale: false
         color: root.contentColor
       }

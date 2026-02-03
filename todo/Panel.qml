@@ -91,7 +91,7 @@ Item {
             spacing: Style.marginM
 
             NIcon {
-              icon: "checklist"
+              icon: "clipboard-check"
               pointSize: Style.fontSizeXL
             }
 
@@ -401,8 +401,9 @@ Item {
                   MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                      // Open detailed view for this todo item
-                      root.openTodoDetails(modelData);
+                      if (!delegateItem.editing) {
+                        root.openTodoDetails(modelData);
+                      }
                     }
                   }
 
@@ -657,25 +658,57 @@ Item {
                         }
 
                         // Clear button
-                        NIconButton {
-                          icon: "restore"
-                          tooltipText: "Clear text"
+                        Item {
+                          implicitWidth: Style.baseWidgetSize * 1.1
+                          implicitHeight: Style.baseWidgetSize * 1.1
 
                           anchors.right: parent.right
                           anchors.verticalCenter: parent.verticalCenter
                           anchors.rightMargin: Style.marginM
 
-                          scale: 0.8
-                          colorBg: "transparent"
-                          colorBgHover: "transparent"
-                          colorFg: Color.mOnSurface
-                          colorFgHover: Color.mError
-
                           visible: todoTextEdit.text.length > 0
 
-                          onClicked: {
-                            todoTextEdit.clear();
-                            todoTextEdit.forceActiveFocus();
+                          NIcon {
+                            id: clearButtonIcon
+                            anchors.centerIn: parent
+                            icon: "backspace"
+                            pointSize: Style.fontSizeL
+                            color: Color.mOnSurfaceVariant
+                            opacity: 0.5
+
+                            MouseArea {
+                              id: clearMouseArea
+                              anchors.fill: parent
+                              hoverEnabled: true
+                              cursorShape: Qt.PointingHandCursor
+                              onClicked: {
+                                todoTextEdit.clear();
+                                todoTextEdit.forceActiveFocus();
+                              }
+
+                              states: [
+                                State {
+                                  name: "hovered"
+                                  when: clearMouseArea.containsMouse
+                                  PropertyChanges {
+                                    target: clearButtonIcon
+                                    opacity: 1.0
+                                    color: Color.mError
+                                  }
+                                }
+                              ]
+
+                              transitions: [
+                                Transition {
+                                  from: "*"; to: "hovered"
+                                  NumberAnimation { properties: "opacity"; duration: 150 }
+                                },
+                                Transition {
+                                  from: "hovered"; to: "*"
+                                  NumberAnimation { properties: "opacity"; duration: 150 }
+                                }
+                              ]
+                            }
                           }
                         }
                       }
@@ -768,25 +801,101 @@ Item {
                       RowLayout {
                         id: editButtonsRow
                         anchors.centerIn: parent
-                        spacing: Style.baseWidgetSize * 0.4
+                        spacing: Style.baseWidgetSize * 0.1
 
-                        NIconButton {
-                          id: saveButton
-                          icon: "check"
-                          baseSize: Style.baseWidgetSize * 0.9
+                        // Save button
+                        Item {
+                          implicitWidth: Style.baseWidgetSize * 1.0
+                          implicitHeight: Style.baseWidgetSize * 1.0
 
-                          onClicked: {
-                            delegateItem.saveEdit();
+                          NIcon {
+                            id: saveButtonIcon
+                            anchors.centerIn: parent
+                            icon: "check"
+                            pointSize: Style.fontSizeM
+                            color: Color.mOnSurfaceVariant
+                            opacity: 0.5
+
+                            MouseArea {
+                              id: saveMouseArea
+                              anchors.fill: parent
+                              hoverEnabled: true
+                              cursorShape: Qt.PointingHandCursor
+                              onClicked: {
+                                delegateItem.saveEdit();
+                              }
+
+                              states: [
+                                State {
+                                  name: "hovered"
+                                  when: saveMouseArea.containsMouse
+                                  PropertyChanges {
+                                    target: saveButtonIcon
+                                    opacity: 1.0
+                                    color: Color.mPrimary
+                                  }
+                                }
+                              ]
+
+                              transitions: [
+                                Transition {
+                                  from: "*"; to: "hovered"
+                                  NumberAnimation { properties: "opacity"; duration: 150 }
+                                },
+                                Transition {
+                                  from: "hovered"; to: "*"
+                                  NumberAnimation { properties: "opacity"; duration: 150 }
+                                }
+                              ]
+                            }
                           }
                         }
 
-                        NIconButton {
-                          id: cancelButton
-                          icon: "x"
-                          baseSize: Style.baseWidgetSize * 0.9
+                        // Cancel button
+                        Item {
+                          implicitWidth: Style.baseWidgetSize * 1.0
+                          implicitHeight: Style.baseWidgetSize * 1.0
 
-                          onClicked: {
-                            delegateItem.cancelEdit();
+                          NIcon {
+                            id: cancelButtonIcon
+                            anchors.centerIn: parent
+                            icon: "x"
+                            pointSize: Style.fontSizeM
+                            color: Color.mOnSurfaceVariant
+                            opacity: 0.5
+
+                            MouseArea {
+                              id: cancelMouseArea
+                              anchors.fill: parent
+                              hoverEnabled: true
+                              cursorShape: Qt.PointingHandCursor
+                              onClicked: {
+                                delegateItem.cancelEdit();
+                              }
+
+                              states: [
+                                State {
+                                  name: "hovered"
+                                  when: cancelMouseArea.containsMouse
+                                  PropertyChanges {
+                                    target: cancelButtonIcon
+                                    opacity: 1.0
+                                    color: Color.mOnSurface
+                                  }
+                                }
+                              ]
+
+                              transitions: [
+                                Transition {
+                                  from: "*"; to: "hovered"
+                                  NumberAnimation { properties: "opacity"; duration: 150 }
+                                },
+                                Transition {
+                                  from: "hovered"; to: "*"
+                                  NumberAnimation { properties: "opacity"; duration: 150 }
+                                }
+                              ]
+                            }
                           }
                         }
                       }

@@ -120,7 +120,7 @@ DraggableDesktopWidget {
         spacing: scaledMarginS
 
         NIcon {
-          icon: "checklist"
+          icon: "clipboard-check"
           pointSize: scaledFontSizeL
         }
 
