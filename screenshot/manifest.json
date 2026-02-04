@@ -12,6 +12,7 @@
         "Utility"
     ],
     "entryPoints": {
+        "main": "Main.qml",
         "barWidget": "BarWidget.qml",
         "settings": "Settings.qml"
     },

@@ -52,6 +52,19 @@ When clicked, the plugin will:
 3. Copy the screenshot to clipboard
 4. Run silently without notifications
 
+### IPC Commands
+Control the plugin via command line:
+```bash
+# Screenshot of screen
+qs -c noctalia-shell ipc call plugin:screenshot takeScreenshot output 
+
+# Screenshot of window
+qs -c noctalia-shell ipc call plugin:screenshot takeScreenshot window
+
+# Screenshot of region
+qs -c noctalia-shell ipc call plugin:screenshot takeScreenshot region
+```
+
 ## License
 
 MIT License
