@@ -19,23 +19,6 @@
     "todo_not_found": "ID为 ",
     "todo_status_changed": "待办事项 "
   },
-  "panel": {
-    "add_todo": {
-      "add_button": "添加",
-      "placeholder": "输入新的待办事项..."
-    },
-    "empty_state": {
-      "message": "暂无待办事项"
-    },
-    "header": {
-      "clear_completed_button": "清除已完成",
-      "title": "待办事项列表"
-    },
-    "todo_item": {
-      "delete_button_tooltip": "删除",
-      "edit_button_tooltip": "编辑"
-    }
-  },
   "settings": {
     "background_color": {
       "description": "待办事项小部件的背景颜色",
@@ -100,5 +83,4 @@
       "button_cancel": "取消"
     }
   }
-}
 }
