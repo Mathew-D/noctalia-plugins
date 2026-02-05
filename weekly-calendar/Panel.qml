@@ -24,8 +24,6 @@ Item {
     property real timeColumnWidth: 65 * Style.uiScaleRatio
     property real daySpacing: 1 * Style.uiScaleRatio
 
-    
-
     // Attempt at live syncing
     Connections {
         target: CalendarService
