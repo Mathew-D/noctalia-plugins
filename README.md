@@ -123,6 +123,7 @@ This allows the community to share and use plugins outside the main registry.
 | ThatOneCalculator | [GitHub](https://github.com/ThatOneCalculator/personal-noctalia-plugins) |
 | bennypowers | [GitHub](https://github.com/bennypowers/noctalia-plugins) |
 | rukh-debug | [GitHub](https://github.com/rukh-debug/noctalia-unofficial-plugins) |
+| mikuri12 | [GitHub](https://github.com/mikuri12/My-lazy-plugins-for-Noctalia) |
 
 ## Development
 
