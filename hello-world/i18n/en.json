@@ -3,7 +3,8 @@
     "settings": "Widget settings"
   },
   "panel": {
-    "test": "This string is translated via the plugin API"
+    "test": "This string is translated via the plugin API",
+    "open-settings": "Open Plugin Settings"
   },
   "settings": {
     "iconColor": {

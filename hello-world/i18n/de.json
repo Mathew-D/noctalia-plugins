@@ -3,7 +3,8 @@
     "settings": "Widget Einstellungen"
   },
   "panel": {
-    "test": "Diese Zeichenkette wird über die Plugin-API übersetzt"
+    "test": "Diese Zeichenkette wird über die Plugin-API übersetzt",
+    "open-settings": "Plugin-Einstellungen öffnen"
   },
   "settings": {
     "iconColor": {
