@@ -8,25 +8,25 @@ import qs.Widgets
 
 Item {
     id: root
-
     property var pluginApi: null
+
     property ShellScreen screen
-
-    readonly property bool enabled: 
-        pluginApi.pluginSettings.enabled || 
-        false
-
-    readonly property bool isPlaying:
-        pluginApi.pluginSettings.isPlaying ||
-        false
-
-    readonly property bool isMuted:
-        pluginApi.pluginSettings.isMuted ||
-        false
 
     implicitWidth: pill.width
     implicitHeight: pill.height
 
+
+    /***************************
+    * PROPERTIES
+    ***************************/
+    readonly property bool enabled:     pluginApi.pluginSettings.enabled    || false
+    readonly property bool isPlaying:   pluginApi.pluginSettings.isPlaying  || false
+    readonly property bool isMuted:     pluginApi.pluginSettings.isMuted    || false
+
+
+    /***************************
+    * COMPONENTS
+    ***************************/
     NPopupContextMenu {
         id: contextMenu
 

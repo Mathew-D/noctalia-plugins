@@ -10,21 +10,21 @@ ColumnLayout {
     spacing: Style.marginM
     Layout.fillWidth: true
 
+
+    /***************************
+    * PROPERTIES
+    ***************************/
     required property var pluginApi
     required property bool enabled
 
-    property bool automation:
-        pluginApi?.pluginSettings?.automation ||
-        false
+    property bool   automation:     pluginApi.pluginSettings.automation     || false
+    property string automationMode: pluginApi.pluginSettings.automationMode || "random"
+    property real   automationTime: pluginApi.pluginSettings.automationTime || 5 * 60
 
-    property string automationMode:
-        pluginApi?.pluginSettings?.automationMode ||
-        "random"
 
-    property real automationTime:
-        pluginApi?.pluginSettings?.automationTime ||
-        5 * 60
-
+    /***************************
+    * COMPONENTS
+    ***************************/
     // Automation Toggle
     NToggle {
         enabled: root.enabled
@@ -117,6 +117,7 @@ ColumnLayout {
         }
     }
 
+    
     /********************************
     * Save settings functionality
     ********************************/

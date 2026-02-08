@@ -1,68 +1,23 @@
-import Qt.labs.folderlistmodel
 import QtQuick
 import Quickshell.Io
 import qs.Commons
+import qs.Services.UI
 
+import "./common"
 import "./main"
 
 Item {
     id: root
-
     property var pluginApi: null
 
 
-    readonly property bool automation:
-        pluginApi.pluginSettings.automation ||
-        false
+    /***************************
+    * PROPERTIES
+    ***************************/
+    readonly property string currentWallpaper: pluginApi.pluginSettings.currentWallpaper || ""
+    readonly property string wallpapersFolder: pluginApi.pluginSettings.wallpapersFolder || "~/Pictures/Wallpapers"
 
-    readonly property string automationMode:
-        pluginApi.pluginSettings.automationMode ||
-        "random"
-
-    readonly property real automationTime:
-        pluginApi.pluginSettings.automationTime ||
-        5 * 60
-
-    readonly property string currentWallpaper: 
-        pluginApi.pluginSettings.currentWallpaper || 
-        ""
-
-    readonly property bool enabled: 
-        pluginApi.pluginSettings.enabled || 
-        false
-
-    readonly property int fillMode:
-        pluginApi.pluginSettings.fillMode ||
-        0
-
-    readonly property bool isMuted:
-        pluginApi.pluginSettings.isMuted ||
-        false
-
-    readonly property bool isPlaying:
-        pluginApi.pluginSettings.isPlaying ||
-        false
-
-    readonly property var oldWallpapers:
-        pluginApi.pluginSettings.oldWallpapers || 
-        ({})
-
-    readonly property int orientation:
-        pluginApi.pluginSettings.orientation ||
-        0
-
-    readonly property bool thumbCacheReady:
-        pluginApi.pluginSettings.thumbCacheReady ||
-        false
-
-    readonly property double volume:
-        pluginApi.pluginSettings.volume ||
-        1.0
-
-    readonly property string wallpapersFolder: 
-        pluginApi.pluginSettings.wallpapersFolder || 
-        pluginApi.manifest.metadata.defaultSettings.wallpapersFolder || 
-        "~/Pictures/Wallpapers"
+    readonly property string thumbCacheFolderPath: ImageCacheService.wpThumbDir + "video-wallpaper"
 
 
     /***************************
@@ -73,13 +28,13 @@ Item {
             Logger.e("video-wallpaper", "Wallpapers folder is empty!");
             return;
         }
-        if (folderModel.count === 0) {
+        if (rootFolderModel.count === 0) {
             Logger.e("video-wallpaper", "No valid video files found!");
             return;
         }
 
-        const rand = Math.floor(Math.random() * folderModel.count);
-        const url = folderModel.get(rand, "filePath");
+        const rand = Math.floor(Math.random() * rootFolderModel.count);
+        const url = rootFolderModel.get(rand, "filePath");
         setWallpaper(url);
     }
 
@@ -92,7 +47,7 @@ Item {
             Logger.e("video-wallpaper", "Wallpapers folder is empty!");
             return;
         }
-        if (folderModel.count === 0) {
+        if (rootFolderModel.count === 0) {
             Logger.e("video-wallpaper", "No valid video files found!");
             return;
         }
@@ -100,9 +55,9 @@ Item {
         Logger.d("video-wallpaper", "Choosing next wallpaper...");
 
         // Even if the file is not in wallpapers folder, aka -1, it sets the nextIndex to 0 then
-        const currentIndex = folderModel.indexOf(root.currentWallpaper);
-        const nextIndex = (currentIndex + 1) % folderModel.count;
-        const url = folderModel.get(nextIndex, "filePath");
+        const currentIndex = rootFolderModel.indexOf(root.currentWallpaper);
+        const nextIndex = (currentIndex + 1) % rootFolderModel.count;
+        const url = rootFolderModel.get(nextIndex);
         setWallpaper(url);
     }
 
@@ -116,16 +71,20 @@ Item {
         pluginApi.saveSettings();
     }
 
+
     /***************************
     * HELPER FUNCTIONALITY
     ***************************/
     function getThumbPath(videoPath: string): string {
-        return thumbnails.getThumbPath(videoPath);
+        const file = videoPath.split('/').pop();
+
+        return `${thumbCacheFolderPath}/${file}.bmp`
     }
 
     function thumbRegenerate() {
         thumbnails.thumbRegenerate();
     }
+
 
     /***************************
     * COMPONENTS
@@ -133,155 +92,55 @@ Item {
     VideoWallpaper {
         id: wallpaper
         pluginApi: root.pluginApi
-        currentWallpaper: root.currentWallpaper
-        enabled: root.enabled
-        fillMode: root.fillMode
-        isPlaying: root.isPlaying
-        isMuted: root.isMuted
-        orientation: root.orientation
-        volume: root.volume
-
-        thumbnails: thumbnails
-        innerService: innerService
     }
 
     Thumbnails {
         id: thumbnails
         pluginApi: root.pluginApi
-        currentWallpaper: root.currentWallpaper
-        thumbCacheReady: root.thumbCacheReady
-        folderModel: folderModel
+
+        getThumbPath: root.getThumbPath
+        thumbCacheFolderPath: root.thumbCacheFolderPath
+
+        folderModel: rootFolderModel
+        thumbFolderModel: rootThumbFolderModel
     }
 
     InnerService {
         id: innerService
         pluginApi: root.pluginApi
-        currentWallpaper: root.currentWallpaper
-        oldWallpapers: root.oldWallpapers
 
-        thumbnails: thumbnails
+        getThumbPath: root.getThumbPath
+        thumbFolderModel: rootThumbFolderModel
+
+        onOldWallpapersSaved: {
+            // When the old wallpapers are saved and done, inform the color gen.
+            thumbnails.oldWallpapersSaved = true;
+        }
     }
 
     Automation {
         id: automation
         pluginApi: root.pluginApi
-        automation: root.automation
-        automationMode: root.automationMode
-        automationTime: root.automationTime
 
         random: root.random
         nextWallpaper: root.nextWallpaper
     }
 
-    FolderListModel {
-        id: folderModel
-        folder: root.pluginApi == null ? "" : "file://" + root.wallpapersFolder
-        nameFilters: ["*.mp4", "*.avi", "*.mov"]
-        showDirs: false
+    FolderModel {
+        id: rootFolderModel
+        folder: root.wallpapersFolder
+        filters: ["*.mp4", "*.avi", "*.mov"]
+    }
 
-        onStatusChanged: {
-            if (folderModel.status == FolderListModel.Ready) {
-                // Generate all the thumbnails for the folder
-                thumbnails.thumbGeneration();
-            }
-        }
+    FolderModel {
+        id: rootThumbFolderModel
+        folder: root.thumbCacheFolderPath
+        filters: ["*.bmp"]
     }
 
     // IPC Handler
-    IpcHandler {
-        target: "plugin:videowallpaper"
-
-        function random() {
-            root.random();
-        }
-
-        function clear() {
-            root.clear();
-        }
-
-        // Current wallpaper
-        function setWallpaper(path: string) {
-            root.setWallpaper(path);
-        }
-
-        function getWallpaper(): string {
-            return root.currentWallpaper;
-        }
-
-        // Enabled
-        function setEnabled(enabled: bool) {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.enabled = enabled;
-            root.pluginApi.saveSettings();
-        }
-
-        function getEnabled(): bool {
-            return root.enabled;
-        }
-
-        function toggleActive() {
-            setEnabled(!root.enabled);
-        }
-
-        // Is playing
-        function resume() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isPlaying = true;
-            root.pluginApi.saveSettings();
-        }
-
-        function pause() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isPlaying = false;
-            root.pluginApi.saveSettings();
-        }
-
-        function togglePlaying() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isPlaying = !root.isPlaying;
-            root.pluginApi.saveSettings();
-        }
-
-        // Mute / unmute
-        function mute() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isMuted = true;
-            root.pluginApi.saveSettings();
-        }
-
-        function unmute() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isMuted = false;
-            root.pluginApi.saveSettings();
-        }
-
-        function toggleMute() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isMuted = !root.isMuted;
-            root.pluginApi.saveSettings();
-        }
-
-        // Volume
-        function setVolume(volume: real) {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.volume = volume;
-            root.pluginApi.saveSettings();
-        }
-
-        function increaseVolume() {
-            setVolume(root.volume + Settings.data.audio.volumeStep);
-        }
-
-        function decreaseVolume() {
-            setVolume(root.volume - Settings.data.audio.volumeStep);
-        }
+    IPC {
+        id: ipcHandler
+        pluginApi: root.pluginApi
     }
 }

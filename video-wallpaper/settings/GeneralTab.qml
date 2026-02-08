@@ -9,41 +9,26 @@ ColumnLayout {
     spacing: Style.marginM
     Layout.fillWidth: true
 
+
+    /***************************
+    * PROPERTIES
+    ***************************/
     required property var pluginApi
     required property bool enabled
 
-    readonly property bool isMuted:
-        pluginApi.pluginSettings.isMuted ||
-        false
+    readonly property bool isMuted:     pluginApi.pluginSettings.isMuted    || false
+    readonly property bool isPlaying:   pluginApi.pluginSettings.isPlaying  || false
 
-    readonly property bool isPlaying: 
-        pluginApi.pluginSettings.isPlaying ||
-        false
-
-
-    property string currentWallpaper: 
-        pluginApi?.pluginSettings?.currentWallpaper || 
-        ""
-
-    property int fillMode:
-        pluginApi?.pluginSettings?.fillMode ||
-        0
-
-    property int orientation:
-        pluginApi?.pluginSettings?.orientation ||
-        0
-
-    property double volume:
-        pluginApi?.pluginSettings?.volume ||
-        1.0
-
-    property string wallpapersFolder: 
-        pluginApi?.pluginSettings?.wallpapersFolder ||
-        pluginApi?.manifest?.metadata?.defaultSettings?.wallpapersFolder ||
-        "~/Pictures/Wallpapers"
+    property string currentWallpaper:   pluginApi.pluginSettings.currentWallpaper   || ""
+    property int    fillMode:           pluginApi.pluginSettings.fillMode           || 0
+    property int    orientation:        pluginApi.pluginSettings.orientation        || 0
+    property double volume:             pluginApi.pluginSettings.volume             || 1.0
+    property string wallpapersFolder:   pluginApi.pluginSettings.wallpapersFolder   || "~/Pictures/Wallpapers"
 
 
-
+    /***************************
+    * COMPONENTS
+    ***************************/
     // Wallpaper Folder
     ColumnLayout {
         spacing: Style.marginS
@@ -208,8 +193,11 @@ ColumnLayout {
         target: pluginApi
         function onPluginSettingsChanged() {
             // Update the local properties on change
-            root.wallpapersFolder = root.pluginApi.pluginSettings.wallpapersFolder || "~/Pictures/Wallpapers";
-            root.currentWallpaper = root.pluginApi.pluginSettings.currentWallpaper || "";
+            currentWallpaper =  pluginApi.pluginSettings.currentWallpaper   || ""
+            fillMode =          pluginApi.pluginSettings.fillMode           || 0
+            orientation =       pluginApi.pluginSettings.orientation        || 0
+            volume =            pluginApi.pluginSettings.volume             || 1.0
+            wallpapersFolder =  pluginApi.pluginSettings.wallpapersFolder   || "~/Pictures/Wallpapers"
         }
     }
 
@@ -223,8 +211,9 @@ ColumnLayout {
         }
 
         pluginApi.pluginSettings.currentWallpaper = currentWallpaper;
-        pluginApi.pluginSettings.orientation = orientation;
         pluginApi.pluginSettings.fillMode = fillMode;
+        pluginApi.pluginSettings.orientation = orientation;
+        pluginApi.pluginSettings.volume = volume;
         pluginApi.pluginSettings.wallpapersFolder = wallpapersFolder;
     }
 }

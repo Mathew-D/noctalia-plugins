@@ -1,11 +1,8 @@
 pragma ComponentBehavior: Bound
-import Qt.labs.folderlistmodel
-
 import QtQuick
 import QtQuick.Layouts
 
 import Quickshell
-import Quickshell.Io
 
 import qs.Commons
 import qs.Widgets
@@ -15,7 +12,6 @@ import "./common"
 
 Item {
     id: root
-    
     property var pluginApi: null
 
     readonly property var geometryPlaceholder: panelContainer
@@ -25,24 +21,27 @@ Item {
     property real contentPreferredHeight: 700 * Style.uiScaleRatio
 
 
-    readonly property string currentWallpaper: 
-        pluginApi.pluginSettings.currentWallpaper || 
-        ""
-
-    readonly property bool enabled: 
-        pluginApi.pluginSettings.enabled || 
-        false
-
-    readonly property bool thumbCacheReady:
-        pluginApi?.pluginSettings.thumbCacheReady ||
-        false
-
-    readonly property string wallpapersFolder: 
-        pluginApi.pluginSettings.wallpapersFolder || 
-        pluginApi.manifest.metadata.defaultSettings.wallpapersFolder || 
-        "~/Pictures/Wallpapers"
+    /***************************
+    * PROPERTIES
+    ***************************/
+    readonly property string    currentWallpaper:   pluginApi.pluginSettings.currentWallpaper   || ""
+    readonly property bool      enabled:            pluginApi.pluginSettings.enabled            || false
+    readonly property bool      thumbCacheReady:    pluginApi.pluginSettings.thumbCacheReady    || false
+    readonly property string    wallpapersFolder:   pluginApi.pluginSettings.wallpapersFolder   || "~/Pictures/Wallpapers"
 
 
+    /***************************
+    * EVENTS
+    ***************************/
+    onThumbCacheReadyChanged: {
+        // When the thumbnail cache is ready, reload the folder model.
+        folderModel.forceReload();
+    }
+
+
+    /***************************
+    * COMPONENTS
+    ***************************/
     Rectangle {
         id: panelContainer
         anchors.fill: parent
@@ -91,7 +90,12 @@ Item {
                     text: root.pluginApi?.tr("panel.tool_row.refresh.text") || "Refresh"
                     tooltipText: root.pluginApi?.tr("panel.tool_row.refresh.tooltip") || "Refresh thumbnails, remove old ones and create new ones."
 
-                    onClicked: root.pluginApi?.mainInstance.thumbRegenerate();
+                    onClicked: { 
+                        if(pluginApi.mainInstance == null) {
+                            Logger.e("video-wallpaper", "Main instance is null, so can't call thumbRegenerate");
+                        }
+                        root.pluginApi.mainInstance.thumbRegenerate();
+                    }
                 }
 
                 NToggle {
@@ -145,16 +149,14 @@ Item {
                         // For now all wallpapers are shown in a 16:9 ratio
                         cellHeight: Math.floor(itemSize * (9/16))
 
-                        model: wallpapersFolderModel.status == FolderListModel.Ready && root.thumbCacheReady ? wallpapersFolderModel : 0
+                        model: folderModel.ready && root.thumbCacheReady ? folderModel.files : 0
 
                         // Wallpaper
                         delegate: Item {
                             id: wallpaper
-                            required property int index
+                            required property string modelData
                             width: gridView.cellWidth
                             height: gridView.cellHeight
-
-                            readonly property var path: wallpapersFolderModel.get(index, "filePath");
 
                             NImageRounded {
                                 id: wallpaperImage
@@ -165,10 +167,16 @@ Item {
 
                                 radius: Style.radiusXS
 
-                                borderWidth: root.thumbCacheReady && root.currentWallpaper == wallpapersFolderModel.get(index, "filePath") ? Style.borderM : 0
+                                borderWidth: {
+                                    if (root.thumbCacheReady && root.currentWallpaper == wallpaper.modelData) return Style.borderM;
+                                    else return 0;
+                                }
                                 borderColor: Color.mPrimary;
 
-                                imagePath: root.thumbCacheReady && root.pluginApi.mainInstance != null ? root.pluginApi.mainInstance.getThumbPath(wallpaper.path) : "";
+                                imagePath: {
+                                    if (root.thumbCacheReady && root.pluginApi.mainInstance != null) return root.pluginApi.mainInstance.getThumbPath(wallpaper.modelData);
+                                    else return "";
+                                }
                                 fallbackIcon: "alert-circle"
 
                                 MouseArea {
@@ -185,23 +193,17 @@ Item {
                                             return;
                                         }
 
-                                        root.pluginApi.pluginSettings.currentWallpaper = wallpaper.path;
+                                        root.pluginApi.pluginSettings.currentWallpaper = wallpaper.modelData;
                                         root.pluginApi.saveSettings();
                                     }
 
-                                    onEntered: TooltipService.show(wallpaperImage, wallpaper.path, "auto", 100);
+                                    onEntered: TooltipService.show(wallpaperImage, wallpaper.modelData, "auto", 100);
                                     onExited: TooltipService.hideImmediately();
                                 }
                             }
                         }
                     }
 
-                    FolderListModel {
-                        id: wallpapersFolderModel
-                        folder: root.pluginApi == null ? "" : "file://" + root.wallpapersFolder
-                        nameFilters: ["*.mp4", "*.avi", "*.mov"]
-                        showDirs: false
-                    }
                 }
             }
 
@@ -211,6 +213,11 @@ Item {
         }
     }
 
+    FolderModel {
+        id: folderModel
+        folder: root.wallpapersFolder
+        filters: ["*.mp4", "*.avi", "*.mov"]
+    }
 
     NFilePicker {
         id: wallpapersFolderPicker

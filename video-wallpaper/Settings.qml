@@ -8,15 +8,20 @@ import "./settings"
 
 ColumnLayout {
     id: root
-
     property var pluginApi: null
 
-    property bool enabled:
-        pluginApi?.pluginSettings?.enabled ||
-        false
-
     spacing: Style.marginM
+
+
+    /***************************
+    * PROPERTIES
+    ***************************/
+    property bool enabled: pluginApi.pluginSettings.enabled || false
+
     
+    /***************************
+    * COMPONENTS
+    ***************************/
     // Active toggle
     NToggle {
         Layout.fillWidth: true
@@ -28,6 +33,7 @@ ColumnLayout {
 
     NDivider {}
 
+    // Tool row
     ToolRow {
         pluginApi: root.pluginApi
         enabled: root.enabled
@@ -35,6 +41,7 @@ ColumnLayout {
 
     NDivider {}
 
+    // Tab bar with all the settings menu
     NTabBar {
         id: subTabBar
         Layout.fillWidth: true
@@ -55,6 +62,7 @@ ColumnLayout {
         }
     }
 
+    // The menu shown
     NTabView {
         id: tabView
         currentIndex: subTabBar.currentIndex

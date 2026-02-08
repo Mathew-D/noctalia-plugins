@@ -18,16 +18,13 @@ Variants {
     /***************************
     * PROPERTIES
     ***************************/
-    required property string currentWallpaper
-    required property bool enabled
-    required property int fillMode
-    required property bool isPlaying
-    required property bool isMuted
-    required property int orientation
-    required property real volume
-
-    required property Thumbnails thumbnails
-    required property InnerService innerService
+    readonly property string    currentWallpaper:   pluginApi.pluginSettings.currentWallpaper   || ""
+    readonly property bool      enabled:            pluginApi.pluginSettings.enabled            || false
+    readonly property int       fillMode:           pluginApi.pluginSettings.fillMode           || 0
+    readonly property bool      isMuted:            pluginApi.pluginSettings.isMuted            || false
+    readonly property bool      isPlaying:          pluginApi.pluginSettings.isPlaying          || false
+    readonly property int       orientation:        pluginApi.pluginSettings.orientation        || 0
+    readonly property double    volume:             pluginApi.pluginSettings.volume             || 1.0
 
 
     /***************************
@@ -35,29 +32,24 @@ Variants {
     ***************************/
     onCurrentWallpaperChanged: {
         if (root.enabled && root.currentWallpaper != "") {
-            thumbnails.startColorGen();
+            // Set the isPlaying flag to true.
+            pluginApi.pluginSettings.isPlaying = true;
+            pluginApi.saveSettings();
         }
     }
 
     onEnabledChanged: {
-        if(root.enabled && root.currentWallpaper != "") {
-            Logger.d("video-wallpaper", "Turning video-wallpaper on.");
-
-            // Save the old wallpapers of the user.
-            innerService.saveOldWallpapers();
-
+        if (root.enabled && root.currentWallpaper != "") {
+            // Set the isPlaying flag to true.
             pluginApi.pluginSettings.isPlaying = true;
             pluginApi.saveSettings();
-
-            thumbnails.startColorGen();
-        } else if(!root.enabled) {
-            Logger.d("video-wallpaper", "Turning video-wallpaper off.");
-
-            // Apply the old wallpapers back
-            innerService.applyOldWallpapers();
         }
     }
 
+
+    /***************************
+    * COMPONENTS
+    ***************************/
     model: Quickshell.screens
     PanelWindow {
         required property var modelData
@@ -68,7 +60,7 @@ Variants {
         implicitHeight: modelData.height
         visible: root.enabled && root.currentWallpaper != ""
 
-        WlrLayershell.namespace: `noctalia-video-wallpaper-${modelData.name}`
+        WlrLayershell.namespace: `noctalia-wallpaper-video-${modelData.name}`
         WlrLayershell.layer: WlrLayer.Background
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
