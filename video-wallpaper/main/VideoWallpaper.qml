@@ -26,37 +26,6 @@ Variants {
     required property int orientation
     required property real volume
 
-    required property Thumbnails thumbnails
-    required property InnerService innerService
-
-
-    /***************************
-    * EVENTS
-    ***************************/
-    onCurrentWallpaperChanged: {
-        if (root.enabled && root.currentWallpaper != "") {
-            thumbnails.startColorGen();
-        }
-    }
-
-    onEnabledChanged: {
-        if(root.enabled && root.currentWallpaper != "") {
-            Logger.d("video-wallpaper", "Turning video-wallpaper on.");
-
-            // Save the old wallpapers of the user.
-            innerService.saveOldWallpapers();
-
-            pluginApi.pluginSettings.isPlaying = true;
-            pluginApi.saveSettings();
-
-            thumbnails.startColorGen();
-        } else if(!root.enabled) {
-            Logger.d("video-wallpaper", "Turning video-wallpaper off.");
-
-            // Apply the old wallpapers back
-            innerService.applyOldWallpapers();
-        }
-    }
 
     model: Quickshell.screens
     PanelWindow {

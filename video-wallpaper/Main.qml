@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell.Io
 import qs.Commons
 
+import "./common"
 import "./main"
 
 Item {
@@ -128,6 +129,41 @@ Item {
     }
 
     /***************************
+    * EVENTS
+    ***************************/
+    onCurrentWallpaperChanged: {
+        if (root.enabled && root.currentWallpaper != "") {
+            innerService.saveOldWallpapers();
+
+            Logger.d("video-wallpaper", root.currentWallpaper);
+
+            // Only after saving the old wallpapers should we start the color gen since it uses the same WallpaperService
+            thumbnails.startColorGen(root.currentWallpaper);
+
+            // Set the isPlaying flag to true.
+            pluginApi.pluginSettings.isPlaying = true;
+            pluginApi.saveSettings();
+        } else {
+            innerService.applyOldWallpapers();
+        }
+    }
+
+    onEnabledChanged: {
+        if (root.enabled && root.currentWallpaper != "") {
+            innerService.saveOldWallpapers();
+
+            // Only after saving the old wallpapers should we start the color gen since it uses the same WallpaperService
+            thumbnails.startColorGen(root.currentWallpaper);
+
+            // Set the isPlaying flag to true.
+            pluginApi.pluginSettings.isPlaying = true;
+            pluginApi.saveSettings();
+        } else {
+            innerService.applyOldWallpapers();
+        }
+    }
+
+    /***************************
     * COMPONENTS
     ***************************/
     VideoWallpaper {
@@ -140,16 +176,14 @@ Item {
         isMuted: root.isMuted
         orientation: root.orientation
         volume: root.volume
-
-        thumbnails: thumbnails
-        innerService: innerService
     }
 
     Thumbnails {
         id: thumbnails
         pluginApi: root.pluginApi
-        currentWallpaper: root.currentWallpaper
+        enabled: root.enabled
         thumbCacheReady: root.thumbCacheReady
+        wallpapersFolder: root.wallpapersFolder
         folderModel: folderModel
     }
 
@@ -157,6 +191,7 @@ Item {
         id: innerService
         pluginApi: root.pluginApi
         currentWallpaper: root.currentWallpaper
+        enabled: root.enabled
         oldWallpapers: root.oldWallpapers
 
         thumbnails: thumbnails
@@ -173,18 +208,10 @@ Item {
         nextWallpaper: root.nextWallpaper
     }
 
-    FolderListModel {
+    FolderModel {
         id: folderModel
-        folder: root.pluginApi == null ? "" : "file://" + root.wallpapersFolder
-        nameFilters: ["*.mp4", "*.avi", "*.mov"]
-        showDirs: false
-
-        onStatusChanged: {
-            if (folderModel.status == FolderListModel.Ready) {
-                // Generate all the thumbnails for the folder
-                thumbnails.thumbGeneration();
-            }
-        }
+        folder: root.wallpapersFolder
+        filters: ["*.mp4", "*.avi", "*.mov"]
     }
 
     // IPC Handler
@@ -282,6 +309,13 @@ Item {
 
         function decreaseVolume() {
             setVolume(root.volume - Settings.data.audio.volumeStep);
+        }
+
+        // Panel
+        function openPanel() {
+            pluginApi.withCurrentScreen(screen => {
+                pluginApi.openPanel(screen);
+            });
         }
     }
 }

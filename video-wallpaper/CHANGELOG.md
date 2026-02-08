@@ -2,6 +2,12 @@
 
 Here I'll try to document all changes for the video-wallpaper plugin.
 
+## 1.1.3 - 2026-02-08
+
+- feat: Added IPC call to open the panel
+- fix: Rewrote a lot of the backend code to make it more stable.
+- fix: Fixed a lot of bugs.
+
 ## 1.1.2 - 2026-02-07
 
 - i18n: added german translations

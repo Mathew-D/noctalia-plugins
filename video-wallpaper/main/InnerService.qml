@@ -1,4 +1,3 @@
-import Qt.labs.folderlistmodel
 import QtQuick
 
 import qs.Commons
@@ -13,6 +12,7 @@ Item {
     * PROPERTIES
     ***************************/
     required property string currentWallpaper
+    required property bool enabled
     required property var oldWallpapers
 
     required property Thumbnails thumbnails
@@ -23,21 +23,20 @@ Item {
     ***************************/
     function saveOldWallpapers() {
         Logger.d("video-wallpaper", "Saving old wallpapers.");
- 
+
         let changed = false;
         let wallpapers = {};
         const oldWallpapers = WallpaperService.currentWallpapers;
         for(let screenName in oldWallpapers) {
             const thumbPath = thumbnails.getThumbPath(root.currentWallpaper);
-            // Only save the old wallpapers if it isn't the current video wallpaper, and if the cacheFolder contains the current thumbnail.
-            if(oldWallpapers[screenName] != thumbPath &&
-                thumbnails.thumbCacheFolder.includes(thumbPath)) {
+            const oldWallpaper = oldWallpapers[screenName];
+            // Only save the old wallpapers if it isn't the current video wallpaper, and if the thumbnail folder doesn't know of it.
+            if(oldWallpaper != thumbPath && thumbnails.thumbFolderModel.indexOf(oldWallpaper) === -1) {
                 wallpapers[screenName] = oldWallpapers[screenName];
-                changed = true;
             }
         }
 
-        if(changed) {
+        if(Object.keys(wallpapers).length != 0) {
             pluginApi.pluginSettings.oldWallpapers = wallpapers;
             pluginApi.saveSettings();
         }
@@ -46,14 +45,8 @@ Item {
     function applyOldWallpapers() {
         Logger.d("video-wallpaper", "Applying the old wallpapers.");
 
-        let changed = false;
         for (let screenName in oldWallpapers) {
             WallpaperService.changeWallpaper(oldWallpapers[screenName], screenName);
-            changed = true;
-        }
-
-        if(!changed) {
-            WallpaperService.changeWallpaper(WallpaperService.noctaliaDefaultWallpaper, undefined);
         }
     }
 
