@@ -68,8 +68,8 @@ ColumnLayout {
     NTextInput {
         enabled: root.enabled
         Layout.fillWidth: true
-        label: root.pluginApi?.tr("settings.advanced.mpv_socket.title_label") || "Mpvpaper Socket"
-        description: root.pluginApi?.tr("settings.advanced.mpv_socket.title_description") || "The mpvpaper socket that noctalia connects to"
+        label: root.pluginApi?.tr("settings.advanced.mpv_socket.label") || "Mpvpaper Socket"
+        description: root.pluginApi?.tr("settings.advanced.mpv_socket.description") || "The mpvpaper socket that noctalia connects to"
         placeholderText: root.pluginApi?.tr("settings.advanced.mpv_socket.input_placeholder") || "Example: /tmp/mpv-socket"
         text: root.mpvSocket
         onTextChanged: root.mpvSocket = text
