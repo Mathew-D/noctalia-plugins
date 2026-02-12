@@ -20,6 +20,7 @@ Item {
     readonly property bool   isMuted:              pluginApi?.pluginSettings?.isMuted              || false
     readonly property bool   isPlaying:            pluginApi?.pluginSettings?.isPlaying            || false
     readonly property string mpvSocket:            pluginApi?.pluginSettings?.mpvSocket            || pluginApi?.manifest?.metadata?.defaultSettings?.mpvSocket || ""
+    readonly property int    orientation:          pluginApi?.pluginSettings?.orientation          || 0
     readonly property string profile:              pluginApi?.pluginSettings?.profile              || pluginApi?.manifest?.metadata?.defaultSettings?.profile   || ""
     readonly property double volume:               pluginApi?.pluginSettings?.volume               || pluginApi?.manifest?.metadata?.defaultSettings?.volume    || 0
 
@@ -44,7 +45,7 @@ Item {
             options.push("no-audio"); }
 
         const optionsString = options.join(" ");
-        const command = `mpvpaper -o "${optionsString}" ALL "${root.currentWallpaper}"`;
+        const command = `pkill mpvpaper; mpvpaper -o "${optionsString}" ALL "${root.currentWallpaper}"`;
 
         return ["sh", "-c", command];
     }
@@ -82,23 +83,11 @@ Item {
         deactivateMpvpaper();
     }
 
-    onEnabledChanged: {
-        if(root.enabled && !mpvProc.running && root.currentWallpaper != "") {
-            Logger.d("video-wallpaper", "Turning mpvpaper on.");
-
-            activateMpvpaper();
-        } else if(!root.enabled) {
-            Logger.d("video-wallpaper", "Turning mpvpaper off.");
-
-            deactivateMpvpaper();
-        }
-    }
 
     onCurrentWallpaperChanged: {
-        Logger.d("video-wallpaper", "Current wallpaper changed from mpvpaper");
+        if (!root.enabled) return;
 
-        if (!root.enabled)
-            return;
+        Logger.d("video-wallpaper", "Current wallpaper changed from mpvpaper");
 
         if (root.currentWallpaper != "") {
             Logger.d("video-wallpaper", "Changing current wallpaper:", root.currentWallpaper);
@@ -117,10 +106,22 @@ Item {
         }
     }
 
-    onHardwareAccelerationChanged: {
-        Logger.d("video-wallpaper", "Changing hardware acceleration");
+    onEnabledChanged: {
+        if(root.enabled && !mpvProc.running && root.currentWallpaper != "") {
+            Logger.d("video-wallpaper", "Turning mpvpaper on.");
 
+            activateMpvpaper();
+        } else if(!root.enabled) {
+            Logger.d("video-wallpaper", "Turning mpvpaper off.");
+
+            deactivateMpvpaper();
+        }
+    }
+
+    onHardwareAccelerationChanged: {
         if(!root.enabled || !mpvProc.running) return;
+
+        Logger.d("video-wallpaper", "Changing hardware acceleration");
 
         if(hardwareAcceleration) {
             sendCommandToMPV("set hwdec auto");
@@ -129,46 +130,10 @@ Item {
         }
     }
 
-    onIsMutedChanged: {
-        if (!mpvProc.running) {
-            Logger.d("video-wallpaper", "No wallpaper is running!");
-            return;
-        }
-
-        // This sets the audio id to null or to auto
-        if (isMuted) {
-            sendCommandToMPV("no-osd set aid no");
-        } else {
-            sendCommandToMPV("no-osd set aid auto");
-        }
-    }
-
-    onIsPlayingChanged: {
-        if (!mpvProc.running) {
-            Logger.d("video-wallpaper", "No wallpaper is running!");
-            return;
-        }
-
-        // Pause or unpause the video
-        if(isPlaying) {
-            sendCommandToMPV("set pause no");
-        } else {
-            sendCommandToMPV("set pause yes");
-        }
-    }
-
-    onProfileChanged: {
-        Logger.d("video-wallpaper", "Changing current profile");
-
-        if (!root.enabled || !mpvProc.running) return;
-
-        sendCommandToMPV(`set profile ${profile}`)
-    }
-
     onFillModeChanged: {
-        Logger.d("video-wallpaper", "Changing current fill mode");
-
         if (!root.enabled || !mpvProc.running) return;
+
+        Logger.d("video-wallpaper", "Changing current fill mode");
 
         switch(fillMode){
             case "fit": // Fit
@@ -185,11 +150,47 @@ Item {
         }
     }
 
-    onVolumeChanged: {
-        if(!mpvProc.running) {
-            Logger.d("video-wallpaper", "No wallpaper is running!");
-            return;
+    onIsMutedChanged: {
+        if (!root.enabled || !mpvProc.running) return;
+
+        // This sets the audio id to null or to auto
+        if (isMuted) {
+            sendCommandToMPV("no-osd set aid no");
+        } else {
+            sendCommandToMPV("no-osd set aid auto");
         }
+    }
+
+    onIsPlayingChanged: {
+        if (!root.enabled || !mpvProc.running) return;
+
+        // Pause or unpause the video
+        if(isPlaying) {
+            sendCommandToMPV("set pause no");
+        } else {
+            sendCommandToMPV("set pause yes");
+        }
+    }
+
+    onOrientationChanged: {
+        if (!root.enabled || !mpvProc.running) return;
+
+        Logger.d("video-wallpaper", "Changing orientation");
+
+        sendCommandToMPV(`set video-rotate ${orientation}`);
+    }
+
+    onProfileChanged: {
+        if (!root.enabled || !mpvProc.running) return;
+
+        Logger.d("video-wallpaper", "Changing current profile");
+
+        sendCommandToMPV(`set profile ${profile}`);
+    }
+
+
+    onVolumeChanged: {
+        if (!root.enabled || !mpvProc.running) return;
 
         // Mpv has volume from 0 to 100 instead of 0 to 1
         const v = Math.min(Math.max(volume, 0), 100);

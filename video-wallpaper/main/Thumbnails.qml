@@ -123,7 +123,15 @@ Item {
     * EVENTS
     ***************************/
     onCurrentWallpaperChanged: {
-        root.startColorGen();
+        if (root.enabled && root.currentWallpaper != "") {
+            root.startColorGen();
+        }
+    }
+
+    onEnabledChanged: {
+        if (root.enabled && root.currentWallpaper != "") {
+            root.startColorGen();
+        }
     }
 
     onWallpapersFolderChanged: {

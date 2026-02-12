@@ -19,7 +19,8 @@ ColumnLayout {
     required property string activeBackend
     required property bool enabled
 
-    property string fillMode: pluginApi?.pluginSettings?.fillMode || pluginApi?.manifest?.metadata?.defaultSettings?.fill_mode || ""
+    property string fillMode: pluginApi?.pluginSettings?.fillMode    || pluginApi?.manifest?.metadata?.defaultSettings?.fill_mode || ""
+    property int orientation: pluginApi?.pluginSettings?.orientation || 0
 
     readonly property list<string> backends: ["qt6-multimedia", "mpvpaper"]
 
@@ -51,6 +52,33 @@ ColumnLayout {
         onSelected: key => root.fillMode = key
     }
 
+    // Orientation
+    NValueSlider {
+        property real _value: root.orientation
+
+        enabled: root.enabled
+        from: 0
+        to: 270
+        value: root.orientation
+        defaultValue: 0
+        stepSize: 90
+        text: _value
+        label: root.pluginApi?.tr("settings.advanced.orientation.label") || "Orientation"
+        description: root.pluginApi?.tr("settings.advanced.orientation.description") || "The orientation of the video playing, can be any multiple of 90 degrees."
+        onMoved: value => _value = value
+        onPressedChanged: (pressed, value) => {
+            if(root.pluginApi == null) {
+                Logger.e("video-wallpaper", "Plugin API is null.");
+                return
+            }
+
+            if(!pressed) {
+                root.pluginApi.pluginSettings.orientation = value;
+                root.pluginApi.saveSettings();
+            }
+        }
+    }
+
     NTabView {
         currentIndex: root.backends.indexOf(root.activeBackend)
 
@@ -76,7 +104,8 @@ ColumnLayout {
         target: root.pluginApi
         function onPluginSettingsChanged() {
             // Update the local properties on change
-            root.fillMode = root.pluginApi?.pluginSettings?.fillMode || root.pluginApi?.manifest?.metadata?.defaultSettings?.fillMode || ""
+            root.fillMode =    root.pluginApi?.pluginSettings?.fillMode    || root.pluginApi?.manifest?.metadata?.defaultSettings?.fillMode || ""
+            root.orientation = root.pluginApi?.pluginSettings?.orientation || 0
         }
     }
 
@@ -94,5 +123,6 @@ ColumnLayout {
         mpvpaper.saveSettings();
 
         pluginApi.pluginSettings.fillMode = fillMode;
+        pluginApi.pluginSettings.orientation = orientation;
     }
 }

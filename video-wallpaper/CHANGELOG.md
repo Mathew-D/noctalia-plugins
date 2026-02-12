@@ -2,6 +2,11 @@
 
 Here I'll try to document all changes for the video-wallpaper plugin.
 
+## 1.2.1 - 2026-02-10
+
+- feat: Added support for orientation with mpvpaper.
+- fix: Fixed a bug where color gen wasn't started correctly with the enabled toggle.
+
 ## 1.2.0 - 2026-02-09
 
 - feat: Added support to use mpvpaper as a backend renderer.
