@@ -2,6 +2,9 @@
 # Do not edit manually.
 #
 # Each plugin directory is owned by the first person who committed to it.
+# Fallback owners: @Ly-sec @ItsLemmy
+
+* @Ly-sec @ItsLemmy
 
 /activate-linux/ @pgattic
 /assistant-panel/ @Jerry
