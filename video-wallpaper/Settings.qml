@@ -28,7 +28,6 @@ ColumnLayout {
     /***************************
     * FUNCTIONS
     ***************************/
-
     function saveMonitorProperty(key: string, value: var): void {
         function createMonitorSettings(monitor) {
             // Check if the monitor settings exist and create it if it doesn't exist

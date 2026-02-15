@@ -17,15 +17,15 @@ RowLayout {
     // Required properties
     required property var pluginApi
 
-    required property bool   monitorSpecific
     required property string screenName
 
     // Optional properties
     property bool   enabled:         true
     
     // Monitor specific properties
-    readonly property bool isPlaying: pluginApi?.pluginSettings?.[screenName]?.isPlaying || false
-    readonly property bool isMuted:   pluginApi?.pluginSettings?.[screenName]?.isMuted   || false
+    readonly property bool isPlaying:       pluginApi?.pluginSettings?.[screenName]?.isPlaying || false
+    readonly property bool isMuted:         pluginApi?.pluginSettings?.[screenName]?.isMuted   || false
+    readonly property bool monitorSpecific: pluginApi?.pluginSettings?.monitorSpecific         || false
 
 
     /********************************
@@ -75,8 +75,9 @@ RowLayout {
                 pluginApi.pluginSettings[screenName] = {};
             }
 
-            pluginApi.pluginSettings[screenName].isMuted = !root.isMuted;
+            pluginApi.pluginSettings[screenName][key] = value;
         }
+
         pluginApi.saveSettings();
     }
 

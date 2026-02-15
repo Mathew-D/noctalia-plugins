@@ -8,6 +8,8 @@ Item {
 
     required property var pluginApi
 
+    property alias running: timer.running
+
     property string screenName: undefined
 
     function save(key: string, value: var) {

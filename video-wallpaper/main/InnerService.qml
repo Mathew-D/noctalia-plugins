@@ -24,11 +24,8 @@ Item {
     readonly property string noctaliaWallpaper: pluginApi?.pluginSettings?.[screenName]?.noctaliaWallpaper || ""
 
     // Global properties
-    readonly property bool enabled:         pluginApi?.pluginSettings?.enabled || false
-    readonly property bool thumbCacheReady: pluginApi?.pluginSettings?.thumbCacheRead || false
-
-    // Local properties
-    property bool saving: false
+    readonly property bool enabled:         pluginApi?.pluginSettings?.enabled         || false
+    readonly property bool thumbCacheReady: pluginApi?.pluginSettings?.thumbCacheReady || false
 
     // Signals
     signal oldWallpapersSaved
@@ -38,24 +35,25 @@ Item {
     * FUNCTIONS
     ***************************/
     function saveOldWallpapers() {
-        if (pluginApi == null || saving) return;
+        if (pluginApi == null || saveTimer.running) return;
 
-        saving = true;
-
-        if(!thumbCacheReady) {
+        if (!thumbCacheReady || !thumbFolderModel.ready) {
             Qt.callLater(saveOldWallpapers);
+            return;
         }
 
-        const currentWallpaper = WallpaperService.currentWallpapers[root.screenName];
+        const noctaliaWallpaper = WallpaperService.currentWallpapers[root.screenName];
 
-        if (thumbFolderModel.indexOf(currentWallpaper) === -1) {
-            saveTimer.save("noctaliaWallpaper", currentWallpaper);
-            Logger.d("video-wallpaper", "Saving old wallpapers...");
+        // Check if the wallpaper name is VERY similar to how the thumbnail generation works,
+        // aka if the last characters are ".extension.bmp", in that case just don't do anything, just as a fail safe.
+        const videoExtension = currentWallpaper.split(".").pop();
+        const isSimilarToThumbnailGen = noctaliaWallpaper.slice(-8) === `.${videoExtension}.bmp`;
+
+        if (thumbFolderModel.indexOf(noctaliaWallpaper) === -1 && !isSimilarToThumbnailGen) {
+            saveTimer.save("noctaliaWallpaper", noctaliaWallpaper);
         }
 
         oldWallpapersSaved();
-
-        saving = false;
     }
 
     function applyOldWallpapers() {
@@ -72,7 +70,7 @@ Item {
 
         if (root.enabled && root.currentWallpaper != "") {
             root.saveOldWallpapers();
-        } else {
+        } else if (!root.enabled) {
             root.applyOldWallpapers();
         }
     }
@@ -82,7 +80,7 @@ Item {
 
         if (root.enabled && root.currentWallpaper != "") {
             root.saveOldWallpapers();
-        } else {
+        } else if (!root.enabled) {
             root.applyOldWallpapers();
         }
     }

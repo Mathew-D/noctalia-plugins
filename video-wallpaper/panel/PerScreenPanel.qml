@@ -13,6 +13,7 @@ import "../common"
 ColumnLayout {
     id: root
     required property var pluginApi
+    anchors.fill: parent
 
 
     /***************************
@@ -22,9 +23,35 @@ ColumnLayout {
     required property bool   thumbCacheReady
 
     readonly property string currentWallpaper: pluginApi?.pluginSettings?.[screenName]?.currentWallpaper || ""
-    readonly property bool   monitorSpecific:  pluginApi?.pluginSettings?.monitorSpecific || false
+    readonly property bool   monitorSpecific:  pluginApi?.pluginSettings?.monitorSpecific                || false
 
-    anchors.fill: parent
+
+    /***************************
+    * FUNCTIONS
+    ***************************/
+    function saveMonitorProperty(key: string, value: var): void {
+        function createMonitorSettings(monitor) {
+            // Check if the monitor settings exist and create it if it doesn't exist
+            if (pluginApi.pluginSettings[monitor] === undefined) {
+                pluginApi.pluginSettings[monitor] = {};
+            }
+        }
+
+        if(pluginApi == null) {
+            Logger.e("video-wallpaper", "PluginAPI is null.");
+            return;
+        }
+
+        if (monitorSpecific) {
+            createMonitorSettings(screenName);
+            pluginApi.pluginSettings[screenName][key] = value;
+        } else {
+            for (const screen of Quickshell.screens) {
+                createMonitorSettings(screen.name);
+                pluginApi.pluginSettings[screen.name][key] = value;
+            }
+        }
+    }
 
 
     /***************************
@@ -113,12 +140,7 @@ ColumnLayout {
                                     return;
                                 }
 
-                                // Check that the monitor object exists.
-                                if (root.pluginApi.pluginSettings[root.screenName] === undefined) {
-                                    root.pluginApi.pluginSettings[root.screenName] = {};
-                                }
-
-                                root.pluginApi.pluginSettings[root.screenName].currentWallpaper = wallpaper.modelData;
+                                root.saveMonitorProperty("currentWallpaper", wallpaper.modelData);
                                 root.pluginApi.saveSettings();
                             }
 
@@ -134,7 +156,6 @@ ColumnLayout {
 
     ToolRow {
         pluginApi:       root.pluginApi
-        monitorSpecific: root.monitorSpecific
         screenName:      root.screenName
     }
 }
