@@ -16,8 +16,8 @@ Item {
     required property FolderModel folderModel
 
     // Global properties
-    readonly property var currentWallpaper:     pluginApi?.pluginSettings?.currentWallpaper     || ({})
-    readonly property string wallpapersFolder:  pluginApi?.pluginSettings?.wallpapersFolder     || pluginApi?.manifest?.metadata?.defaultSettings?.wallpapersFolder || ""
+    readonly property bool   monitorSpecific:  pluginApi?.pluginSettings?.monitorSpecific  || false
+    readonly property string wallpapersFolder: pluginApi?.pluginSettings?.wallpapersFolder || pluginApi?.manifest?.metadata?.defaultSettings?.wallpapersFolder || ""
 
 
     /***************************
@@ -55,7 +55,7 @@ Item {
         Logger.d("video-wallpaper", "Choosing next wallpaper...");
 
         // Even if the file is not in wallpapers folder, aka -1, it sets the nextIndex to 0 then
-        const currentIndex = folderModel.indexOf(root.currentWallpaper);
+        const currentIndex = folderModel.indexOf(pluginApi?.pluginSettings?.[screen]?.currentWallpaper);
         const nextIndex = (currentIndex + 1) % folderModel.count;
         const url = folderModel.get(nextIndex);
         setWallpaper(url, screen);
@@ -67,11 +67,19 @@ Item {
             return;
         }
 
-        if(screen !== undefined) {
+        function createMonitorSettings(monitor) {
+            if (pluginApi.pluginSettings[monitor] === undefined) {
+                pluginApi.pluginSettings[monitor] = {};
+            }
+        }
+
+        if(monitorSpecific) {
+            createMonitorSettings(screen);
             pluginApi.pluginSettings[screen].currentWallpaper = path;
             pluginApi.pluginSettings[screen].isPlaying = true;
         } else {
             for(const screen of Quickshell.screens) {
+                createMonitorSettings(screen.name);
                 pluginApi.pluginSettings[screen.name].currentWallpaper = path;
                 pluginApi.pluginSettings[screen.name].isPlaying = true;
             }
