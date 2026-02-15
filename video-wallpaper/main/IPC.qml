@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import Quickshell.Io
 import qs.Commons
 
@@ -10,15 +11,125 @@ Item {
     /***************************
     * PROPERTIES
     ***************************/
-    readonly property var  currentWallpaper: pluginApi?.pluginSettings?.currentWallpaper || ({})
     readonly property bool enabled:          pluginApi?.pluginSettings?.enabled          || false
-    readonly property var  isMuted:          pluginApi?.pluginSettings?.isMuted          || ({})
-    readonly property var  isPlaying:        pluginApi?.pluginSettings?.isPlaying        || ({})
-    readonly property var  volume:           pluginApi?.pluginSettings?.volume           || pluginApi?.manifest?.metadata?.defaultSettings?.volume || 0
 
     required property var random
     required property var clear
     required property var setWallpaper
+
+
+    /***************************
+    * FUNCTIONS
+    ***************************/
+    function deltaChangeMonitorProperty(key: string, delta: double, screen: string): void {
+        function createMonitorSettings(monitor) {
+            // Check if the monitor settings exist and create it if it doesn't exist
+            if (pluginApi.pluginSettings[monitor] === undefined) {
+                pluginApi.pluginSettings[monitor] = {};
+            }
+        }
+
+        if(pluginApi == null) {
+            Logger.e("video-wallpaper", "PluginAPI is null.");
+            return;
+        }
+
+        if (screen === "") {
+            for (const screen of Quickshell.screens) {
+                createMonitorSettings(screen.name);
+                const currentValue = pluginApi.pluginSettings[screen.name][key];
+                if (typeof currentValue === "number") {
+                    pluginApi.pluginSettings[screen.name][key] = currentValue + delta;
+                }
+            }
+        } else {
+            createMonitorSettings(screen);
+            const currentValue = pluginApi.pluginSettings[screen][key];
+            if (typeof currentValue === "number") {
+                pluginApi.pluginSettings[screen.name][key] = currentValue + delta;
+            }
+        }
+
+        pluginApi.saveSettings();
+    }
+
+    function toggleMonitorProperty(key: string, screen: string): void {
+        function createMonitorSettings(monitor) {
+            // Check if the monitor settings exist and create it if it doesn't exist
+            if (pluginApi.pluginSettings[monitor] === undefined) {
+                pluginApi.pluginSettings[monitor] = {};
+            }
+        }
+
+        if(pluginApi == null) {
+            Logger.e("video-wallpaper", "PluginAPI is null.");
+            return;
+        }
+
+        if (screen === "") {
+            for (const screen of Quickshell.screens) {
+                createMonitorSettings(screen.name);
+                const currentValue = pluginApi.pluginSettings[screen.name][key];
+                if (typeof currentValue === "boolean") {
+                    pluginApi.pluginSettings[screen.name][key] = !currentValue;
+                }
+            }
+        } else {
+            createMonitorSettings(screen);
+            const currentValue = pluginApi.pluginSettings[screen][key];
+            if (typeof currentValue === "boolean") {
+                pluginApi.pluginSettings[screen.name][key] = !currentValue;
+            }
+        }
+
+        pluginApi.saveSettings();
+    }
+
+    function saveMonitorProperty(key: string, value: var, screen: string): void {
+        function createMonitorSettings(monitor) {
+            // Check if the monitor settings exist and create it if it doesn't exist
+            if (pluginApi.pluginSettings[monitor] === undefined) {
+                pluginApi.pluginSettings[monitor] = {};
+            }
+        }
+
+        if(pluginApi == null) {
+            Logger.e("video-wallpaper", "PluginAPI is null.");
+            return;
+        }
+
+        if (screen === "") {
+            for (const screen of Quickshell.screens) {
+                createMonitorSettings(screen.name);
+                pluginApi.pluginSettings[screen.name][key] = value;
+            }
+        } else {
+            createMonitorSettings(screen);
+            pluginApi.pluginSettings[screen][key] = value;
+        }
+
+        pluginApi.saveSettings();
+    }
+
+    function getMonitorProperty(key: string, screen: string): string {
+        if(pluginApi == null) {
+            Logger.e("video-wallpaper", "PluginAPI is null.");
+            return;
+        }
+
+        if (screen === "") {
+            let values = [];
+            for (const screen of Quickshell.screens) {
+                if (root.pluginApi?.pluginSettings?.[screen.name]?.[key] !== undefined) {
+                    values.push(`${screen.name}: ${root.pluginApi.pluginSettings[screen.name][key]}`);
+                }
+            }
+
+            return values.join(", ");
+        } else {
+            return pluginApi?.pluginSettings?.[screen]?.[key] || "";
+        }
+    }
 
 
     /***************************
@@ -37,12 +148,13 @@ Item {
         }
 
         // Current wallpaper
-        function setWallpaper(path: string) {
-            root.setWallpaper(path);
+        function setWallpaper(path: string, screen: string) {
+            root.saveMonitorProperty("currentWallpaper", path, screen);
         }
 
-        function getWallpaper(): string {
-            return root.currentWallpaper;
+        function getWallpaper(screen: string): string {
+            const s = root.getMonitorProperty("currentWallpaper", screen);
+            return `Wallpapers: [${s}]`;
         }
 
         // Enabled
@@ -62,63 +174,42 @@ Item {
         }
 
         // Is playing
-        function resume() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isPlaying = true;
-            root.pluginApi.saveSettings();
+        function resume(screen: string) {
+            root.saveMonitorProperty("isPlaying", true, screen);
         }
 
-        function pause() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isPlaying = false;
-            root.pluginApi.saveSettings();
+        function pause(screen: string) {
+            root.saveMonitorProperty("isPlaying", false, screen);
         }
 
-        function togglePlaying() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isPlaying = !root.isPlaying;
-            root.pluginApi.saveSettings();
+        function togglePlaying(screen: string) {
+            root.toggleMonitorProperty("isPlaying", screen);
         }
 
         // Mute / unmute
-        function mute() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isMuted = true;
-            root.pluginApi.saveSettings();
+        function mute(screen: string) {
+            root.saveMonitorProperty("isMuted", true, screen);
         }
 
-        function unmute() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isMuted = false;
-            root.pluginApi.saveSettings();
+        function unmute(screen: string) {
+            root.saveMonitorProperty("isMuted", false, screen);
         }
 
-        function toggleMute() {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.isMuted = !root.isMuted;
-            root.pluginApi.saveSettings();
+        function toggleMute(screen: string) {
+            root.toggleMonitorProperty("isMuted", screen);
         }
 
         // Volume
-        function setVolume(volume: real) {
-            if (root.pluginApi == null) return;
-
-            root.pluginApi.pluginSettings.volume = volume;
-            root.pluginApi.saveSettings();
+        function setVolume(volume: real, screen: string) {
+            root.saveMonitorProperty("volume", volume, screen);
         }
 
-        function increaseVolume() {
-            setVolume(root.volume + Settings.data.audio.volumeStep);
+        function increaseVolume(screen: string) {
+            root.deltaChangeMonitorProperty("volume", Settings.data.audio.volumeStep, screen);
         }
 
-        function decreaseVolume() {
-            setVolume(root.volume - Settings.data.audio.volumeStep);
+        function decreaseVolume(screen: string) {
+            root.deltaChangeMonitorProperty("volume", -Settings.data.audio.volumeStep, screen);
         }
 
         // Panel
