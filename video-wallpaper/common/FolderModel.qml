@@ -50,7 +50,7 @@ Item {
         id: proc
 
         readonly property string _command: {
-            let command = `find ${root.folder} -maxdepth 1`
+            let command = `find "${root.folder}" -mindepth 1 -maxdepth 1`
             let filters = []
             for (const filter of root.filters) {
                 filters.push(`-name "${filter}"`);
