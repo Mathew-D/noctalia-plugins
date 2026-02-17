@@ -704,7 +704,7 @@
     {
       "id": "weather-indicator",
       "name": "Weather Indicator",
-      "version": "1.0.7",
+      "version": "1.0.8",
       "official": false,
       "author": "Sovereign",
       "description": "Shows the current weather condition and tempurature.",
@@ -714,7 +714,7 @@
       "tags": [
         "Bar"
       ],
-      "lastUpdated": "2026-02-14T15:56:19-05:00"
+      "lastUpdated": "2026-02-16T18:49:42-05:00"
     },
     {
       "id": "weekly-calendar",
