@@ -2,6 +2,7 @@ import QtQuick
 import qs.Commons
 import qs.Widgets
 import Quickshell
+import qs.Services.UI
 
 NIconButton {
   id: root
@@ -13,6 +14,8 @@ NIconButton {
 
   // Plugin API (injected by PluginService)
   property var pluginApi: null
+  // Bound to plugin-managed state so color changes are event-driven (no polling loop).
+  readonly property bool recording: pluginApi?.mainInstance?.recordingActive ?? false
 
   // Per-screen bar properties
   readonly property string screenName: screen?.name ?? ""
@@ -25,16 +28,41 @@ NIconButton {
   icon: "screenshot"
   tooltipText: pluginApi?.tr("panel.title") || "Screenshot"
   tooltipDirection: BarService.getTooltipDirection(screenName)
-  colorBg: Style.capsuleColor
-  colorFg: Color.mOnSurface
-  colorBgHover: Color.mHover
-  colorFgHover: Color.mOnHover
+  colorBg: recording ? Color.mError : Style.capsuleColor
+  colorFg: recording ? Color.mOnError : Color.mOnSurface
+  colorBgHover: recording ? Color.mError : Color.mHover
+  colorFgHover: recording ? Color.mOnError : Color.mOnHover
   colorBorder: Style.capsuleBorderColor
   colorBorderHover: Style.capsuleBorderColor
 
   onClicked: {
     if (pluginApi) {
       pluginApi.openPanel(root.screen, root)
+    }
+  }
+
+  onRightClicked: {
+    PanelService.showContextMenu(contextMenu, root, screen)
+  }
+
+  NPopupContextMenu {
+    id: contextMenu
+
+    model: [
+      {
+        "label": I18n.tr("actions.widget-settings"),
+        "action": "widget-settings",
+        "icon": "settings"
+      }
+    ]
+
+    onTriggered: action => {
+      contextMenu.close()
+      PanelService.closeContextMenu(screen)
+
+      if (action === "widget-settings") {
+        BarService.openPluginSettings(screen, pluginApi.manifest)
+      }
     }
   }
 }
