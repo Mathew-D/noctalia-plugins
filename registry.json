@@ -53,7 +53,7 @@
     {
       "id": "battery-threshold",
       "name": "Battery Threshold Control",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "official": false,
       "author": "Wilfred Mallawa",
       "description": "Set the battery threshold for laptop batteries to extend battery lifespan",
@@ -65,7 +65,7 @@
         "Panel",
         "System"
       ],
-      "lastUpdated": "2026-01-31T13:58:49+07:00"
+      "lastUpdated": "2026-03-06T19:49:25+01:00"
     },
     {
       "id": "calibre-provider",
@@ -148,6 +148,37 @@
         "Utility"
       ],
       "lastUpdated": "2026-02-10T10:12:36-05:00"
+    },
+    {
+      "id": "custom-commands",
+      "name": "Custom Commands",
+      "version": "1.0.2",
+      "official": true,
+      "author": "Noctalia Team",
+      "description": "Define and run custom shell commands from the launcher",
+      "repository": "https://github.com/noctalia-dev/noctalia-plugins",
+      "minNoctaliaVersion": "4.4.1",
+      "license": "MIT",
+      "tags": [
+        "Launcher"
+      ],
+      "lastUpdated": "2026-03-09T21:35:47-04:00"
+    },
+    {
+      "id": "custom-sticker",
+      "name": "Custom Stickers",
+      "version": "1.0.0",
+      "official": false,
+      "author": "Spyridon Siarapis",
+      "description": "Custom stickers (images) that you can put on the desktop as desktop widgets.",
+      "repository": "https://github.com/noctalia-dev/noctalia-plugins",
+      "minNoctaliaVersion": "4.6.5",
+      "license": "MIT",
+      "tags": [
+        "Desktop",
+        "Fun"
+      ],
+      "lastUpdated": "2026-03-07T20:50:36+01:00"
     },
     {
       "id": "dns-switcher",
@@ -592,7 +623,7 @@
     {
       "id": "notes-scratchpad",
       "name": "Notes Scratchpad",
-      "version": "1.1.4",
+      "version": "1.1.5",
       "official": false,
       "author": "apt-get",
       "description": "A simple scratchpad for quick notes.",
@@ -604,7 +635,7 @@
         "Panel",
         "Productivity"
       ],
-      "lastUpdated": "2026-03-02T14:23:16+07:00"
+      "lastUpdated": "2026-03-07T21:14:50-05:00"
     },
     {
       "id": "nvim-session-provider",
@@ -718,7 +749,7 @@
     {
       "id": "screen-recorder",
       "name": "Screen Recorder",
-      "version": "1.1.7",
+      "version": "1.2.0",
       "official": true,
       "author": "Noctalia Team",
       "description": "Hardware-accelerated screen recording using gpu-screen-recorder with customizable video and audio settings",
@@ -729,7 +760,7 @@
         "Bar",
         "Utility"
       ],
-      "lastUpdated": "2026-02-10T01:17:08+03:00"
+      "lastUpdated": "2026-03-07T11:53:21+01:00"
     },
     {
       "id": "screen-shot-and-record",
@@ -849,7 +880,7 @@
     {
       "id": "timer",
       "name": "Timer",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "official": true,
       "author": "Noctalia Team",
       "description": "A timer and stopwatch plugin for the bar & control center.",
@@ -860,7 +891,7 @@
         "Bar",
         "Utility"
       ],
-      "lastUpdated": "2026-02-17T08:29:13-05:00"
+      "lastUpdated": "2026-03-09T13:28:20+01:00"
     },
     {
       "id": "todo",
@@ -883,7 +914,7 @@
     {
       "id": "translator",
       "name": "Translator",
-      "version": "1.2.3",
+      "version": "1.2.4",
       "official": false,
       "author": "Cleboost",
       "description": "Quick translate in launcher",
@@ -893,7 +924,7 @@
       "tags": [
         "Launcher"
       ],
-      "lastUpdated": "2026-02-10T10:12:36-05:00"
+      "lastUpdated": "2026-03-08T21:08:15+07:00"
     },
     {
       "id": "unicode-picker",
@@ -930,7 +961,7 @@
     {
       "id": "video-wallpaper",
       "name": "Video Wallpaper",
-      "version": "2.0.3",
+      "version": "2.0.4",
       "official": false,
       "author": "Spyridon Siarapis",
       "description": "A plugin that uses a backend renderer to play videos as your wallpaper.",
@@ -943,7 +974,7 @@
         "Fun",
         "System"
       ],
-      "lastUpdated": "2026-03-01T14:22:48+01:00"
+      "lastUpdated": "2026-03-07T21:33:03+01:00"
     },
     {
       "id": "vscode-provider",
