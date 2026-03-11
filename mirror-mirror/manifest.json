@@ -5,8 +5,8 @@
   "minNoctaliaVersion": "3.6.0",
   "author": "Mathew-D",
   "official": false,
-  "license": "GPL-3.0-or-later",
-  "repository": "https://github.com/Mathew-D/noctalia-plugins",
+  "license": "MIT",
+  "repository": "https://github.com/noctalia-dev/noctalia-plugins",
   "description": "Mirror one monitor to another using wl-mirror.",
   "tags": [
     "Bar",
